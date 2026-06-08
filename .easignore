@@ -1,0 +1,11 @@
+# Что НЕ загружать на сборочный сервер EAS (синтаксис как у .gitignore).
+node_modules/
+.expo/
+dist/
+web-build/
+*.log
+.DS_Store
+*.apk
+*.aab
+android/
+ios/

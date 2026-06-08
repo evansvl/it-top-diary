@@ -1,0 +1,38 @@
+# Зависимости
+node_modules/
+
+# Expo
+.expo/
+dist/
+web-build/
+expo-env.d.ts
+
+# Нативные проекты (генерируются prebuild/EAS)
+/android
+/ios
+
+# Сборки
+*.apk
+*.aab
+
+# Логи
+*.log
+npm-debug.*
+yarn-debug.*
+yarn-error.*
+
+# Окружение / секреты
+.env
+.env*.local
+
+# Локальные служебные файлы разработки
+.eas-build.log
+.npm-install.log
+photo_*.jpg
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Локальные настройки Claude Code
+.claude/settings.local.json
