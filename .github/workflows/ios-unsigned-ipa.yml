@@ -10,10 +10,18 @@ on:
 
 jobs:
   build:
-    runs-on: macos-14
+    # macos-15 несёт Xcode 16.x (RN 0.85 требует >= 16.1).
+    runs-on: macos-15
     steps:
       - name: Checkout
         uses: actions/checkout@v4
+
+      - name: Select latest Xcode 16
+        run: |
+          LATEST=$(ls /Applications | grep -E '^Xcode_16' | sort -V | tail -1)
+          echo "Using $LATEST"
+          sudo xcode-select -s "/Applications/$LATEST/Contents/Developer"
+          xcodebuild -version
 
       - name: Setup Node
         uses: actions/setup-node@v4
