@@ -38,9 +38,20 @@ jobs:
         env:
           CI: 1
 
-      - name: Build release APK
+      - name: Decode release keystore
+        run: |
+          echo "${{ secrets.ANDROID_KEYSTORE_BASE64 }}" | base64 -d > "$RUNNER_TEMP/release.jks"
+          echo "Keystore size: $(stat -c%s "$RUNNER_TEMP/release.jks") bytes"
+
+      - name: Build signed release APK
         working-directory: android
-        run: ./gradlew assembleRelease --no-daemon
+        # AGP injected signing — подписываем нашим release-ключом, не debug.
+        run: |
+          ./gradlew assembleRelease --no-daemon \
+            -Pandroid.injected.signing.store.file="$RUNNER_TEMP/release.jks" \
+            -Pandroid.injected.signing.store.password="${{ secrets.ANDROID_KEYSTORE_PASSWORD }}" \
+            -Pandroid.injected.signing.key.alias="${{ secrets.ANDROID_KEY_ALIAS }}" \
+            -Pandroid.injected.signing.key.password="${{ secrets.ANDROID_KEY_PASSWORD }}"
 
       - name: Rename APK
         run: |
