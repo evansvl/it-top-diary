@@ -73,15 +73,11 @@ jobs:
       - name: Package unsigned .ipa
         run: |
           set -eo pipefail
-          echo "--- .app bundles found ---"
-          find "$RUNNER_TEMP/dd" "$HOME/Library/Developer/Xcode/DerivedData" \
-            -type d -name '*.app' 2>/dev/null || true
-          # Берём app под Release-iphoneos (не симулятор, не Pods/Frameworks)
-          APP=$(find "$RUNNER_TEMP/dd" "$HOME/Library/Developer/Xcode/DerivedData" \
-            -type d -name '*.app' -path '*Release-iphoneos*' 2>/dev/null \
-            | grep -vi 'Pods\|Frameworks\|PlugIns' | head -1)
+          PRODUCTS="$RUNNER_TEMP/dd/Build/Products/Release-iphoneos"
+          echo "--- products ---"; ls -la "$PRODUCTS" || true
+          APP=$(find "$PRODUCTS" -maxdepth 1 -type d -name '*.app' | head -1 || true)
           if [ -z "$APP" ]; then
-            echo "::error::No device .app bundle found"; exit 1
+            echo "::error::No .app in $PRODUCTS"; exit 1
           fi
           echo "Using: $APP"
           mkdir -p "$RUNNER_TEMP/Payload"
