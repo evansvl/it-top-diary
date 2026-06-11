@@ -6,12 +6,16 @@
 Расписание, оценки, домашние задания, экзамены, оплата и рейтинг —
 быстро, удобно и без браузера.
 
-[![Скачать](https://img.shields.io/badge/Скачать-APK-1E6FD9?style=for-the-badge&logo=android&logoColor=white)](https://github.com/evansvl/it-top-diary/releases/latest)
+[![Скачать](https://img.shields.io/badge/Скачать-Releases-1E6FD9?style=for-the-badge&logo=github&logoColor=white)](https://github.com/evansvl/it-top-diary/releases/latest)
 &nbsp;
-![Платформа](https://img.shields.io/badge/Android-5+-success?style=for-the-badge&logo=android&logoColor=white)
+![Android](https://img.shields.io/badge/Android-APK-success?style=for-the-badge&logo=android&logoColor=white)
+&nbsp;
+![iPhone](https://img.shields.io/badge/iPhone-Sideloadly-555?style=for-the-badge&logo=apple&logoColor=white)
 
 > ⚠️ Неофициальное приложение. Работает с вашим личным аккаунтом
 > [journal.top-academy.ru](https://journal.top-academy.ru).
+
+### [✨ Возможности](#-возможности) · [📥 Установка](#-установка) · [🔑 Вход](#-как-войти) · [❓ Вопросы](#-частые-вопросы) · [📄 Лицензия](#-лицензия)
 
 </div>
 
@@ -41,16 +45,54 @@
 
 ---
 
-## 📥 Установка (Android)
+## 📥 Установка
 
-1. Откройте **[Releases](https://github.com/evansvl/it-top-diary/releases/latest)**
-   и скачайте файл **`.apk`**.
-2. Откройте скачанный файл на телефоне.
+Все файлы — в разделе
+**[Releases](https://github.com/evansvl/it-top-diary/releases/latest)**.
+Выберите свою платформу:
+
+<table>
+<tr>
+<th width="50%">🤖 Android</th>
+<th width="50%">🍏 iPhone</th>
+</tr>
+<tr valign="top">
+<td>
+
+Самый простой способ.
+
+1. Скачайте файл **`.apk`** из
+   [Releases](https://github.com/evansvl/it-top-diary/releases/latest).
+2. Откройте его на телефоне.
 3. Если появится предупреждение — разрешите **установку из неизвестных
    источников** (Android сам предложит перейти в настройки).
 4. Нажмите «Установить» и откройте приложение.
 
-> 📱 Для **iPhone** установка чуть сложнее — см. [раздел ниже](#-iphone).
+✅ Готово. Внутри приложения работает **автообновление**.
+
+</td>
+<td>
+
+В App Store нет (нужен платный аккаунт Apple Developer), но ставится
+бесплатно через **Sideloadly** своим Apple ID.
+
+**Нужно:** компьютер (Windows/Mac), кабель, ваш Apple ID.
+
+1. Поставьте **[Sideloadly](https://sideloadly.io)** (есть для Windows;
+   там же нужен **iTunes** с сайта Apple — для драйверов).
+2. Скачайте **`it-top-*-unsigned.ipa`** из
+   [Releases](https://github.com/evansvl/it-top-diary/releases/latest).
+3. Подключите iPhone, откройте Sideloadly, выберите устройство.
+4. Перетащите `.ipa`, введите **Apple ID**, нажмите **Start**.
+5. На iPhone: **Настройки → Основные → VPN и управление устройством**
+   → ваш Apple ID → **Доверять**.
+
+⏳ Подпись бесплатного Apple ID живёт **7 дней** — потом поставьте
+`.ipa` заново. Обновления на iPhone — вручную тем же способом.
+
+</td>
+</tr>
+</table>
 
 ---
 
@@ -79,33 +121,10 @@
 Проверьте логин и пароль на сайте журнала и наличие интернета.
 Сообщение «Неверный логин или пароль» означает неправильные данные.
 
-### 🍏 iPhone
-
-В App Store приложения нет (для этого нужен платный аккаунт Apple Developer),
-но его можно установить на свой iPhone бесплатно через **Sideloadly** —
-своим Apple ID. В [релизах](https://github.com/evansvl/it-top-diary/releases/latest)
-для этого лежит **неподписанный `.ipa`** (файл `*-unsigned.ipa`).
-
-**Что понадобится:** компьютер (Windows или Mac), кабель, ваш Apple ID.
-
-1. Скачайте и установите **[Sideloadly](https://sideloadly.io)** (есть версия
-   для Windows). На Windows также нужен **iTunes** (с сайта Apple, не из
-   Microsoft Store) — для драйверов устройства.
-2. Скачайте файл **`it-top-*-unsigned.ipa`** из
-   [Releases](https://github.com/evansvl/it-top-diary/releases/latest).
-3. Подключите iPhone кабелем, откройте Sideloadly, выберите устройство.
-4. Перетащите `.ipa` в окно Sideloadly, введите **Apple ID** и нажмите
-   **Start** (потребуется пароль приложения / обычный пароль Apple ID).
-5. На iPhone: **Настройки → Основные → VPN и управление устройством** →
-   нажмите свой Apple ID → **Доверять**.
-6. Откройте приложение.
-
-> ⏳ **Важно про бесплатный Apple ID:** подпись действует **7 дней**, потом
-> приложение перестанет открываться — просто поставьте `.ipa` заново через
-> Sideloadly. Это ограничение Apple, не приложения.
-
-> 🔄 Автообновление внутри приложения работает только на Android. На iPhone
-> новые версии ставятся вручную тем же способом.
+**Не открывается на iPhone / «приложение недоступно».**
+Скорее всего истёк 7-дневный срок подписи бесплатного Apple ID —
+переустановите `.ipa` через Sideloadly. Не забудьте «Доверять» профилю
+в настройках устройства.
 
 ---
 
