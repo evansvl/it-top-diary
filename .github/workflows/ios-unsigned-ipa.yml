@@ -54,7 +54,7 @@ jobs:
           echo "scheme=$SCHEME" >> "$GITHUB_OUTPUT"
           echo "Workspace: $WS  Scheme: $SCHEME"
 
-      - name: Archive without code signing
+      - name: Build (device, no code signing)
         run: |
           set -eo pipefail
           xcodebuild \
@@ -62,20 +62,20 @@ jobs:
             -scheme "${{ steps.xc.outputs.scheme }}" \
             -configuration Release \
             -sdk iphoneos \
-            -archivePath "$RUNNER_TEMP/app.xcarchive" \
+            -derivedDataPath "$RUNNER_TEMP/dd" \
             CODE_SIGNING_ALLOWED=NO \
             CODE_SIGNING_REQUIRED=NO \
             CODE_SIGN_IDENTITY="" \
             CODE_SIGN_ENTITLEMENTS="" \
-            archive
+            build
 
       - name: Package unsigned .ipa
         run: |
           set -eo pipefail
-          APP_DIR="$RUNNER_TEMP/app.xcarchive/Products/Applications"
-          APP_NAME=$(ls "$APP_DIR" | head -1)
+          APP=$(ls -d "$RUNNER_TEMP/dd/Build/Products/Release-iphoneos/"*.app | head -1)
+          echo "App: $APP"
           mkdir -p "$RUNNER_TEMP/Payload"
-          cp -R "$APP_DIR/$APP_NAME" "$RUNNER_TEMP/Payload/"
+          cp -R "$APP" "$RUNNER_TEMP/Payload/"
           (cd "$RUNNER_TEMP" && zip -qr ittop-unsigned.ipa Payload)
           ls -lh "$RUNNER_TEMP/ittop-unsigned.ipa"
 
