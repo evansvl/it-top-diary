@@ -76,3 +76,21 @@ export async function disableAutoLogin(): Promise<void> {
   const creds = await loadCredentials();
   if (creds) await saveCredentials({ ...creds, autoLogin: false });
 }
+
+// --- Настройки приложения ---
+// Не секрет, но отдельное хранилище заводить не стоит — SecureStore уже есть.
+const SETTINGS_KEY = 'app.settings';
+
+export async function saveAppSettings<T>(settings: T): Promise<void> {
+  await SecureStore.setItemAsync(SETTINGS_KEY, JSON.stringify(settings));
+}
+
+export async function loadAppSettings<T>(): Promise<T | null> {
+  const raw = await SecureStore.getItemAsync(SETTINGS_KEY);
+  if (!raw) return null;
+  try {
+    return JSON.parse(raw) as T;
+  } catch {
+    return null;
+  }
+}

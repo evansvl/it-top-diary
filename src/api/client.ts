@@ -36,8 +36,12 @@ export async function apiRequest<T>(
   path: string,
   { method = 'GET', body, auth = true, headers: extra, signal }: RequestOptions = {},
 ): Promise<T> {
+  // FormData (загрузка файлов) — Content-Type не ставим: fetch сам
+  // подставит multipart/form-data с boundary.
+  const isFormData = typeof FormData !== 'undefined' && body instanceof FormData;
+
   const headers: Record<string, string> = {
-    'Content-Type': 'application/json',
+    ...(isFormData ? {} : { 'Content-Type': 'application/json' }),
     Accept: 'application/json, text/plain, */*',
     'Accept-Language': 'ru_RU, ru',
     // WAF Top Academy отклоняет запросы без Origin/Referer веб-журнала (403).
@@ -56,7 +60,12 @@ export async function apiRequest<T>(
     response = await fetch(`${API_BASE_URL}${path}`, {
       method,
       headers,
-      body: body !== undefined ? JSON.stringify(body) : undefined,
+      body:
+        body === undefined
+          ? undefined
+          : isFormData
+            ? (body as FormData)
+            : JSON.stringify(body),
       signal,
     });
   } catch {

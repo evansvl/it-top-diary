@@ -1,29 +1,30 @@
+import { useState } from 'react';
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { MarkChip } from '@/components/grades/MarkChip';
+import {
+  MarkDetailModal,
+  type MarkDetail,
+} from '@/components/grades/MarkDetailModal';
+import { HomeworkDetailModal } from '@/components/homework/HomeworkDetailModal';
+import type { HomeworkItem } from '@/features/homework/types';
 import { useGrades } from '@/features/grades/useGrades';
 import {
-  markBg,
-  markColor,
-  markLabel,
-  type SubjectGrades,
-} from '@/features/grades/types';
+  attendanceForRange,
+  type AttendanceSlice,
+} from '@/features/grades/gradesApi';
+import { type Mark, type SubjectGrades } from '@/features/grades/types';
+import { monthAnchorIso, todayIso, weekStartIso } from '@/lib/date';
 
-function MarkChip({ value }: { value: number }) {
-  return (
-    <View
-      className={`mb-2 mr-2 h-8 min-w-[32px] items-center justify-center rounded-lg px-2 ${markBg(
-        value,
-      )}`}
-    >
-      <Text className={`text-sm font-bold ${markColor(value)}`}>
-        {markLabel(value)}
-      </Text>
-    </View>
-  );
-}
-
-// Карточка предмета: все оценки (без ограничения количества).
-function SubjectCard({ item }: { item: SubjectGrades }) {
+// Карточка предмета: все оценки (без ограничения количества), тап по
+// оценке — детали (за что получена).
+function SubjectCard({
+  item,
+  onPressMark,
+}: {
+  item: SubjectGrades;
+  onPressMark: (mark: Mark) => void;
+}) {
   return (
     <View className="mb-3 rounded-card bg-ink-800 p-4">
       <View className="flex-row items-start justify-between">
@@ -37,7 +38,11 @@ function SubjectCard({ item }: { item: SubjectGrades }) {
 
       <View className="mt-3 flex-row flex-wrap">
         {item.marks.map((m, i) => (
-          <MarkChip key={`${m.kind}-${m.date}-${i}`} value={m.value} />
+          <MarkChip
+            key={`${m.kind}-${m.date}-${i}`}
+            value={m.value}
+            onPress={() => onPressMark(m)}
+          />
         ))}
       </View>
     </View>
@@ -47,10 +52,14 @@ function SubjectCard({ item }: { item: SubjectGrades }) {
 function Summary({
   average,
   attendance,
+  attendancePresent,
+  attendanceTotal,
   totalMarks,
 }: {
   average: number | null;
   attendance: number | null;
+  attendancePresent: number;
+  attendanceTotal: number;
   totalMarks: number;
 }) {
   return (
@@ -66,6 +75,11 @@ function Summary({
           {attendance != null ? `${Math.round(attendance * 100)}%` : '—'}
         </Text>
         <Text className="mt-1 text-xs text-slate-400">Посещаемость</Text>
+        {attendanceTotal > 0 ? (
+          <Text className="mt-0.5 text-xs text-slate-500">
+            {attendancePresent} из {attendanceTotal} пар
+          </Text>
+        ) : null}
       </View>
       <View className="flex-1 items-center">
         <Text className="text-3xl font-extrabold text-slate-50">
@@ -77,8 +91,54 @@ function Summary({
   );
 }
 
+// Посещаемость за период: процент + счётчик пар.
+function AttendanceCol({
+  title,
+  slice,
+}: {
+  title: string;
+  slice: AttendanceSlice;
+}) {
+  return (
+    <View className="flex-1 items-center">
+      <Text className="text-xl font-extrabold text-success">
+        {slice.rate != null ? `${Math.round(slice.rate * 100)}%` : '—'}
+      </Text>
+      <Text className="mt-1 text-xs text-slate-400">{title}</Text>
+      {slice.total > 0 ? (
+        <Text className="mt-0.5 text-xs text-slate-500">
+          {slice.present} из {slice.total} пар
+        </Text>
+      ) : null}
+    </View>
+  );
+}
+
+function AttendanceCard({
+  week,
+  month,
+}: {
+  week: AttendanceSlice;
+  month: AttendanceSlice;
+}) {
+  return (
+    <View className="mb-4 rounded-card bg-ink-800 p-4">
+      <Text className="mb-3 text-sm font-semibold text-slate-50">
+        Посещаемость
+      </Text>
+      <View className="flex-row">
+        <AttendanceCol title="За неделю" slice={week} />
+        <AttendanceCol title="За месяц" slice={month} />
+      </View>
+    </View>
+  );
+}
+
 export default function GradesTab() {
   const { data, isLoading, isError, refetch } = useGrades();
+  const [selectedMark, setSelectedMark] = useState<MarkDetail | null>(null);
+  const [selectedHomework, setSelectedHomework] =
+    useState<HomeworkItem | null>(null);
 
   return (
     <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
@@ -102,13 +162,28 @@ export default function GradesTab() {
         <FlatList
           data={data.subjects}
           keyExtractor={(s) => String(s.subjectId)}
-          renderItem={({ item }) => <SubjectCard item={item} />}
-          ListHeaderComponent={
-            <Summary
-              average={data.overallAverage}
-              attendance={data.attendanceRate}
-              totalMarks={data.totalMarks}
+          renderItem={({ item }) => (
+            <SubjectCard
+              item={item}
+              onPressMark={(mark) =>
+                setSelectedMark({ subject: item.subject, mark })
+              }
             />
+          )}
+          ListHeaderComponent={
+            <>
+              <Summary
+                average={data.overallAverage}
+                attendance={data.attendanceRate}
+                attendancePresent={data.attendancePresent}
+                attendanceTotal={data.attendanceTotal}
+                totalMarks={data.totalMarks}
+              />
+              <AttendanceCard
+                week={attendanceForRange(data, weekStartIso(todayIso()), todayIso())}
+                month={attendanceForRange(data, monthAnchorIso(), todayIso())}
+              />
+            </>
           }
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
@@ -119,6 +194,20 @@ export default function GradesTab() {
           }
         />
       )}
+
+      <MarkDetailModal
+        detail={selectedMark}
+        onClose={() => setSelectedMark(null)}
+        onOpenHomework={(hw) => {
+          // Закрываем детали оценки и открываем ДЗ — без вложенных модалок.
+          setSelectedMark(null);
+          setSelectedHomework(hw);
+        }}
+      />
+      <HomeworkDetailModal
+        item={selectedHomework}
+        onClose={() => setSelectedHomework(null)}
+      />
     </SafeAreaView>
   );
 }

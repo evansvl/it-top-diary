@@ -56,6 +56,16 @@ export function isTodayIso(iso: string): boolean {
   return iso === todayIso();
 }
 
+// Понедельник недели, к которой относится ISO-дата.
+export function weekStartIso(iso: string): string {
+  const [y, m, d] = iso.split('-').map(Number);
+  const date = new Date((y ?? 1970), (m ?? 1) - 1, d ?? 1);
+  const fromMonday = (date.getDay() + 6) % 7; // 0 — Пн … 6 — Вс
+  return toIso(
+    new Date(date.getFullYear(), date.getMonth(), date.getDate() - fromMonday),
+  );
+}
+
 // Сдвиг даты на delta дней.
 export function shiftDay(iso: string, delta: number): string {
   const [y, m, d] = iso.split('-').map(Number);

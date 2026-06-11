@@ -1,6 +1,12 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
-import type { GradesData, MarkKind, SubjectGrades } from './types';
+import type {
+  DaySubjectMarks,
+  GradesData,
+  LessonVisit,
+  MarkKind,
+  SubjectGrades,
+} from './types';
 
 // Колонки оценок в записи журнала.
 type MarkColumn =
@@ -43,6 +49,7 @@ export async function fetchGrades(): Promise<GradesData> {
   const raw = await apiRequest<RawVisit[]>(endpoints.progress.studentVisits);
 
   const subjects = new Map<number, SubjectGrades>();
+  const visits: LessonVisit[] = [];
   let present = 0;
   let attendanceTotal = 0;
 
@@ -50,6 +57,11 @@ export async function fetchGrades(): Promise<GradesData> {
     if (v.status_was === 0 || v.status_was === 1 || v.status_was === 2) {
       attendanceTotal += 1;
       if (v.status_was === 1) present += 1;
+      visits.push({
+        date: v.date_visit,
+        subject: v.spec_name,
+        status: v.status_was,
+      });
     }
 
     let subj = subjects.get(v.spec_id);
@@ -64,7 +76,8 @@ export async function fetchGrades(): Promise<GradesData> {
     }
     for (const { col, kind } of MARK_COLUMNS) {
       const value = v[col];
-      if (typeof value === 'number') {
+      // >5 — легаси старой 12-балльной системы, не показываем вовсе
+      if (typeof value === 'number' && value >= 0 && value <= 5) {
         subj.marks.push({ value, date: v.date_visit, kind });
       }
     }
@@ -84,6 +97,68 @@ export async function fetchGrades(): Promise<GradesData> {
     subjects: list,
     overallAverage: average(allStandard),
     attendanceRate: attendanceTotal > 0 ? present / attendanceTotal : null,
+    attendancePresent: present,
+    attendanceTotal,
     totalMarks: allStandard.length,
+    visits,
   };
+}
+
+// Названия предметов в журнале (spec_name) и расписании (subject_name)
+// сравниваем без учёта регистра/лишних пробелов.
+export function normalizeSubject(name: string): string {
+  return name.toLowerCase().replace(/ё/g, 'е').replace(/\s+/g, ' ').trim();
+}
+
+// Оценки, полученные в конкретный день, сгруппированные по предметам.
+export function marksForDate(
+  data: GradesData,
+  date: string,
+): DaySubjectMarks[] {
+  const result: DaySubjectMarks[] = [];
+  for (const s of data.subjects) {
+    const marks = s.marks.filter((m) => m.date === date);
+    if (marks.length > 0) result.push({ subject: s.subject, marks });
+  }
+  return result;
+}
+
+export type AttendanceSlice = {
+  present: number;
+  total: number;
+  rate: number | null; // null — в периоде не было пар с отметкой
+};
+
+// Посещаемость за период [fromIso..toIso] включительно (ISO сравнивается
+// лексикографически).
+export function attendanceForRange(
+  data: GradesData,
+  fromIso: string,
+  toIso: string,
+): AttendanceSlice {
+  let present = 0;
+  let total = 0;
+  for (const v of data.visits) {
+    if (v.date < fromIso || v.date > toIso) continue;
+    total += 1;
+    if (v.status === 1) present += 1;
+  }
+  return { present, total, rate: total > 0 ? present / total : null };
+}
+
+// Отметки посещаемости за день: нормализованный предмет → статусы пар
+// (в порядке записей журнала; на N-ю пару предмета берём N-й статус).
+export function visitsForDate(
+  data: GradesData,
+  date: string,
+): Map<string, LessonVisit['status'][]> {
+  const map = new Map<string, LessonVisit['status'][]>();
+  for (const v of data.visits) {
+    if (v.date !== date) continue;
+    const key = normalizeSubject(v.subject);
+    const arr = map.get(key);
+    if (arr) arr.push(v.status);
+    else map.set(key, [v.status]);
+  }
+  return map;
 }

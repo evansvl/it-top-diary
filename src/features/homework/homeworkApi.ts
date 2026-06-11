@@ -1,6 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
-import type { HomeworkCounts, HomeworkItem } from './types';
+import type { HomeworkCounts, HomeworkItem, HomeworkSubmission } from './types';
 
 // Сырой ответ: массив { counter_type, counter }.
 type RawCount = { counter_type: number; counter: number };
@@ -22,6 +22,17 @@ export async function fetchHomeworkCounts(): Promise<HomeworkCounts> {
   };
 }
 
+// Сданная работа: так же выглядит ответ /homework/operations/create.
+type RawHomeworkStud = {
+  id: number;
+  filename: string | null;
+  file_path: string | null;
+  mark: number | null;
+  creation_time: string | null;
+  stud_answer: string | null;
+  auto_mark: boolean;
+};
+
 // Сырой пункт списка ДЗ.
 type RawHomework = {
   id: number;
@@ -35,8 +46,19 @@ type RawHomework = {
   cover_image: string | null;
   comment: string;
   status: number;
-  homework_stud: { mark: number | null; auto_mark: boolean } | null;
+  homework_stud: RawHomeworkStud | null;
 };
+
+function toSubmission(raw: RawHomeworkStud | null): HomeworkSubmission | null {
+  if (!raw) return null;
+  return {
+    id: raw.id,
+    answerText: raw.stud_answer,
+    fileUrl: raw.file_path,
+    submittedAt: raw.creation_time,
+    mark: raw.mark,
+  };
+}
 
 export type HomeworkListParams = {
   page: number;
@@ -69,5 +91,52 @@ export async function fetchHomeworkList({
     status: r.status,
     mark: r.homework_stud?.mark ?? null,
     hasSubmission: r.homework_stud != null,
+    submission: toSubmission(r.homework_stud),
   }));
+}
+
+// Файл для multipart-загрузки (из expo-document-picker).
+export type SubmissionFile = {
+  uri: string;
+  name: string;
+  mimeType: string | null;
+};
+
+export type SubmitHomeworkParams = {
+  homeworkId: number;
+  answerText: string;
+  file: SubmissionFile | null;
+  spentTimeHour: number;
+  spentTimeMin: number;
+};
+
+// Сдача ДЗ — multipart, как в веб-журнале (поля подтверждены curl'ом).
+export async function submitHomework({
+  homeworkId,
+  answerText,
+  file,
+  spentTimeHour,
+  spentTimeMin,
+}: SubmitHomeworkParams): Promise<HomeworkSubmission> {
+  const form = new FormData();
+  form.append('id', String(homeworkId));
+  if (file) {
+    // RN FormData принимает {uri, name, type} как файл
+    form.append('file', {
+      uri: file.uri,
+      name: file.name,
+      type: file.mimeType ?? 'application/octet-stream',
+    } as unknown as Blob);
+  }
+  form.append('answerText', answerText);
+  form.append('spentTimeHour', String(spentTimeHour));
+  form.append('spentTimeMin', String(spentTimeMin));
+
+  const raw = await apiRequest<RawHomeworkStud>(endpoints.homework.create, {
+    method: 'POST',
+    body: form,
+  });
+  const submission = toSubmission(raw);
+  if (!submission) throw new Error('Пустой ответ сервера');
+  return submission;
 }

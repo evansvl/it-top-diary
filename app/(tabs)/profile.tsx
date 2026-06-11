@@ -1,66 +1,14 @@
-import { Alert, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, Image, Linking, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { useRouter } from 'expo-router';
 import { ProfileCard } from '@/components/profile/ProfileCard';
+import { SettingsRow } from '@/components/settings/SettingsRow';
 import { Button } from '@/components/ui/Button';
 import { useAuthStore } from '@/features/auth/authStore';
-import { clearCredentials } from '@/lib/secureStore';
-
-// Строка настроек: значение справа или действие (с шевроном).
-function SettingsRow({
-  label,
-  value,
-  onPress,
-  danger,
-  border,
-}: {
-  label: string;
-  value?: string;
-  onPress?: () => void;
-  danger?: boolean;
-  border?: boolean;
-}) {
-  return (
-    <Pressable
-      onPress={onPress}
-      disabled={!onPress}
-      className={`flex-row items-center justify-between px-4 py-3.5 active:opacity-70 ${
-        border ? 'border-b border-ink-700' : ''
-      }`}
-    >
-      <Text
-        className={`text-sm ${danger ? 'text-danger' : 'text-slate-100'}`}
-      >
-        {label}
-      </Text>
-      {value ? (
-        <Text className="text-sm text-slate-400">{value}</Text>
-      ) : onPress ? (
-        <Text className="text-lg text-slate-500">›</Text>
-      ) : null}
-    </Pressable>
-  );
-}
 
 export default function ProfileTab() {
+  const router = useRouter();
   const logout = useAuthStore((s) => s.logout);
-
-  const onForgetPassword = () => {
-    Alert.alert(
-      'Забыть сохранённый пароль?',
-      'Логин и пароль будут удалены с устройства.',
-      [
-        { text: 'Отмена', style: 'cancel' },
-        {
-          text: 'Забыть',
-          style: 'destructive',
-          onPress: () => {
-            void clearCredentials();
-            Alert.alert('Готово', 'Сохранённые данные удалены.');
-          },
-        },
-      ],
-    );
-  };
 
   const onLogout = () => {
     Alert.alert('Выйти из аккаунта?', '', [
@@ -78,20 +26,32 @@ export default function ProfileTab() {
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
         <ProfileCard />
 
-        <Text className="mb-2 mt-6 px-1 text-xs uppercase text-slate-500">
-          Настройки
-        </Text>
-        <View className="overflow-hidden rounded-card bg-ink-800">
-          <SettingsRow label="Версия приложения" value="1.0.0" border />
+        <View className="mt-6 overflow-hidden rounded-card bg-ink-800">
           <SettingsRow
-            label="Забыть сохранённый пароль"
-            onPress={onForgetPassword}
+            label="Настройки"
+            hint="Автовход, обновления, кэш"
+            onPress={() => router.push('/settings')}
           />
         </View>
 
         <View className="mt-6">
           <Button title="Выйти" variant="ghost" onPress={onLogout} />
         </View>
+
+        {/* Рекламный баннер (партнёрская ссылка aéza) */}
+        <Pressable
+          className="mt-6 active:opacity-80"
+          onPress={() =>
+            void Linking.openURL('https://aeza.net/?ref=613643')
+          }
+        >
+          <Image
+            source={{ uri: 'https://io.aeza.net/partner-banners/5181las.png' }}
+            style={{ width: '100%', aspectRatio: 728 / 90 }}
+            resizeMode="contain"
+            accessibilityLabel="aéza ref link"
+          />
+        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );

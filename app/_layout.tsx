@@ -8,19 +8,22 @@ import { Stack } from 'expo-router';
 import { useColorScheme } from 'nativewind';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/features/auth/authStore';
+import { useSettingsStore } from '@/features/settings/settingsStore';
 import { colors } from '@/theme/colors';
 
 // Корневой layout: провайдеры, тёмная тема по умолчанию,
-// восстановление сессии при запуске.
+// восстановление сессии и настроек при запуске.
 export default function RootLayout() {
   const { setColorScheme } = useColorScheme();
   const hydrate = useAuthStore((s) => s.hydrate);
+  const hydrateSettings = useSettingsStore((s) => s.hydrate);
 
   useEffect(() => {
     // Тёмная тема по умолчанию (light доступен через настройки профиля)
     setColorScheme('dark');
     hydrate();
-  }, [hydrate, setColorScheme]);
+    hydrateSettings();
+  }, [hydrate, hydrateSettings, setColorScheme]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>

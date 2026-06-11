@@ -21,6 +21,8 @@ export const endpoints = {
   },
   homework: {
     list: '/homework/operations/list',
+    // Сдача ДЗ: multipart (id, file?, answerText, spentTimeHour, spentTimeMin)
+    create: '/homework/operations/create',
   },
   progress: {
     // Полный журнал занятий: посещаемость + оценки по всем предметам.

@@ -9,6 +9,7 @@ import {
   View,
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
+import { HomeworkDetailModal } from '@/components/homework/HomeworkDetailModal';
 import { useHomeworkList } from '@/features/homework/useHomeworkList';
 import {
   HOMEWORK_STATUSES,
@@ -17,10 +18,19 @@ import {
 import { useAuthStore } from '@/features/auth/authStore';
 import { dayTitle, formatDate } from '@/lib/date';
 
-function HomeworkRow({ item }: { item: HomeworkItem }) {
+function HomeworkRow({
+  item,
+  onPress,
+}: {
+  item: HomeworkItem;
+  onPress: () => void;
+}) {
   const meta = HOMEWORK_STATUSES.find((s) => s.value === item.status);
   return (
-    <View className="mb-3 flex-row rounded-card bg-ink-800 p-4">
+    <Pressable
+      onPress={onPress}
+      className="mb-3 flex-row rounded-card bg-ink-800 p-4 active:opacity-70"
+    >
       {item.coverImageUrl ? (
         <Image
           source={{ uri: item.coverImageUrl }}
@@ -55,7 +65,7 @@ function HomeworkRow({ item }: { item: HomeworkItem }) {
           ) : null}
         </View>
       </View>
-    </View>
+    </Pressable>
   );
 }
 
@@ -85,6 +95,7 @@ function groupByDay(items: HomeworkItem[]) {
 export default function HomeworkTab() {
   const groupId = useAuthStore((s) => s.user?.groupId);
   const [status, setStatus] = useState<number>(3);
+  const [selected, setSelected] = useState<HomeworkItem | null>(null);
 
   const {
     data,
@@ -156,7 +167,9 @@ export default function HomeworkTab() {
         <SectionList
           sections={sections}
           keyExtractor={(it) => String(it.id)}
-          renderItem={({ item }) => <HomeworkRow item={item} />}
+          renderItem={({ item }) => (
+            <HomeworkRow item={item} onPress={() => setSelected(item)} />
+          )}
           renderSectionHeader={({ section }) => (
             <Text className="mb-2 mt-1 text-xs font-bold uppercase text-slate-400">
               {section.title}
@@ -181,6 +194,8 @@ export default function HomeworkTab() {
           }
         />
       )}
+
+      <HomeworkDetailModal item={selected} onClose={() => setSelected(null)} />
     </SafeAreaView>
   );
 }

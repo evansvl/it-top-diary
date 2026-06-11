@@ -8,6 +8,15 @@ export type HomeworkCounts = {
   deleted: number; // удалено (5)
 };
 
+// Сданная студентом работа (homework_stud / ответ /homework/operations/create).
+export type HomeworkSubmission = {
+  id: number;
+  answerText: string | null; // stud_answer
+  fileUrl: string | null; // file_path (fs.top-academy.ru)
+  submittedAt: string | null; // creation_time
+  mark: number | null;
+};
+
 // Один пункт списка GET /homework/operations/list (нормализованный).
 export type HomeworkItem = {
   id: number;
@@ -23,6 +32,7 @@ export type HomeworkItem = {
   status: number; // тот же код, что и status в запросе
   mark: number | null; // homework_stud.mark
   hasSubmission: boolean; // сдавал ли студент
+  submission: HomeworkSubmission | null; // детали сдачи
 };
 
 // Статусы ДЗ = counter_type из /count/homework. Подписи и цвета — общие

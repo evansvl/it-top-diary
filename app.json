@@ -2,7 +2,7 @@
   "expo": {
     "name": "IT Top",
     "slug": "college-diary",
-    "version": "1.0.0",
+    "version": "1.2.0",
     "scheme": "diary",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
@@ -10,9 +10,12 @@
     "android": {
       "package": "com.diary.app",
       "softwareKeyboardLayoutMode": "pan",
+      "permissions": [
+        "android.permission.REQUEST_INSTALL_PACKAGES"
+      ],
       "adaptiveIcon": {
         "foregroundImage": "./assets/adaptive-icon.png",
-        "backgroundColor": "#0B1220"
+        "backgroundColor": "#FFFFFF"
       }
     },
     "ios": {
@@ -30,7 +33,8 @@
           "backgroundColor": "#0B1220"
         }
       ],
-      "expo-font"
+      "expo-font",
+      "expo-sharing"
     ],
     "experiments": {
       "typedRoutes": true
