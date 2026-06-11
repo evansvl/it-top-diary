@@ -71,7 +71,12 @@ helpers), `<name>Api.ts` (adapter mapping raw API JSON → domain types), react-
 (`useX.ts`). UI in `src/components/`, routes in `app/`. Alias `@/*` → `./src/*`. To add a
 feature: endpoint in `src/api/endpoints.ts` → feature module → hook → a summary card in
 `src/components/home/` (shown on the home dashboard, tappable to its tab) → the tab screen.
-Existing modules: `auth`, `homework`, `grades`, `schedule`.
+Existing modules: `auth`, `homework`, `grades`, `schedule`, plus root-stack secondary
+screens (not tabs, reached from the home dashboard tiles + `ScreenHeader` back button):
+`news`, `exams`, `payments`, `leaderboard`, `reviews`. The latter five were mapped from a
+**HAR capture** of the web journal (`src/lib/html.ts` renders news `text_bbs` HTML into
+text/image blocks). Secondary screens live in `app/<name>.tsx` and use
+`src/components/ui/ScreenHeader.tsx`.
 
 **Auth + credential persistence**:
 ```
@@ -107,11 +112,22 @@ LoginForm (RHF+zod) → useLogin (mutation) → authApi.login() → authStore.se
   layout, once per session, Android only).
 
 **Conventions**
-- NativeWind v4 (`className`). Tokens (`primary`, `ink-900..600`, `success/warning/danger`,
-  `rounded-card`) in `tailwind.config.js`; app forces dark mode. `className` is typed as a
-  **string** — no function form; use `active:` variants for pressed state. Runtime-concatenated
-  class strings work **only if the literal class appears somewhere in source**. `divide-*`
-  utilities don't work (RN has no sibling selector) — use explicit borders.
+- NativeWind v4 (`className`). `className` is typed as a **string** — no function form; use
+  `active:` variants for pressed state. Runtime-concatenated class strings work **only if the
+  literal class appears somewhere in source**. `divide-*` utilities don't work (RN has no
+  sibling selector) — use explicit borders.
+- **Theme tokens** (`tailwind.config.js` + `global.css`): use the semantic color classes
+  `canvas` (bg), `surface` (cards), `elevated`, `hairline` (borders), and text `title` /
+  `body` / `subtle` / `muted` / `faint` — **NOT** literal `ink-*`/`slate-*` (those are gone
+  from components). They're CSS variables that flip between light/dark; dark values are 1:1
+  with the old `ink`/`slate` so dark looks unchanged. Defined as `rgb(var(--x) / <alpha-value>)`
+  with a light `:root` block and a `.dark:root` override. Brand/semantic colors (`primary`,
+  `success/warning/danger`) are theme-independent. For non-className colors (icon props, tab
+  bar, StatusBar) use `useTheme().palette` (theme-aware), not `colors.dark.*`.
+- **Theme is user-selectable** (default dark): `settingsStore.theme` ('light'|'dark') persisted
+  to SecureStore; `app/_layout.tsx` `ThemedNavigator` applies it via nativewind `setColorScheme`
+  after settings hydrate (sets dark first to avoid a system-light flash), and drives the
+  `Stack` background + StatusBar. Toggle in `app/settings.tsx` → «Оформление».
 - Russian date formatting lives in `src/lib/date.ts` (month/day names, `monthAnchorFromIso`,
   `shiftDay`, `dayTitle`, `todayIso`). App-runtime `Date` is fine here.
 - TS strict + `noUncheckedIndexedAccess` — guard array/index access.
@@ -168,4 +184,27 @@ DevTools; map exact field names, don't guess.
   flat array for the whole month: `date`, `lesson`, `started_at`, `finished_at`, `teacher_name`,
   `subject_name`, `room_name`. `scheduleApi` groups by day; the screen shows one day at a time.
 
-Still unconfirmed: refresh-token, announcements, attendance detail.
+- **Confirmed via HAR (2026-06-11), wired in v1.2.0:**
+  - **News**: `/news/operations/latest-news` → `[{id_bbs, theme, time, viewed}]`;
+    `/news/operations/detail-news?news_id=` → `{id_bbs, theme, time, text_bbs (HTML), is_viewed}`.
+  - **Exams**: `/progress/operations/student-exams` → `[{exam_id, date, spec, teacher, mark,
+    mark_type}]`. `mark_type:1` = normal 5-point; other values (e.g. `mark:20, mark_type:-20`)
+    are legacy/non-standard — shown neutrally, treat only `mark_type:1 & 1..5` as real grades.
+  - **Payments**: `/payment/operations/index` → `.payment.{amount_next, pay_date_start,
+    purpose_of_payment, payer_full_name, amount_debt}`; `/payment/operations/schedule` →
+    `[{id, description, price, payment_date, status}]`; `/payment/operations/history` →
+    `[{date, amount, description, type}]`.
+  - **Leaderboard**: `/dashboard/progress/leader-group` & `leader-stream` →
+    `[{id, full_name, photo_path, amount, position}]` (id == JWT userId, for "это я");
+    `leader-group-points` & `leader-stream-points` → `{totalCount, studentPosition, weekDiff,
+    monthDiff}`.
+  - **Reviews**: `/reviews/index/list` → `[{date, message, spec, full_spec, teacher}]`
+    (teacher comments about the student).
+  - Refresh token **still unconfirmed**: login HAR shows `access_token === refresh_token` and
+    `expires_in_* ` as absolute unix ts ~6h out — no separate refresh observed.
+- Other endpoints seen in HAR but **not yet wired**: `/dashboard/chart/attendance` &
+  `average-progress` (monthly point trends), `/library/*`, `/market/customer/product/list`
+  (points shop), `/profile/statistic/student-achievements`, `/contacts/operations/index`,
+  `/progress/operations/student-visits` is already the grades/attendance source.
+
+Still unconfirmed: refresh-token, announcements popup, attendance detail.
