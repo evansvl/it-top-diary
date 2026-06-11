@@ -48,8 +48,9 @@ jobs:
         id: xc
         run: |
           WS=$(ls ios | grep '\.xcworkspace$' | head -1)
-          SCHEME=$(xcodebuild -workspace "ios/$WS" -list -json \
-            | python3 -c "import sys,json;print(json.load(sys.stdin)['workspace']['schemes'][0])")
+          # Схема приложения = имя .xcodeproj (а не первая из workspace —
+          # там первым идёт под-схема CocoaPods вроде EXConstants).
+          SCHEME=$(ls ios | grep '\.xcodeproj$' | head -1 | sed 's/\.xcodeproj$//')
           echo "workspace=$WS" >> "$GITHUB_OUTPUT"
           echo "scheme=$SCHEME" >> "$GITHUB_OUTPUT"
           echo "Workspace: $WS  Scheme: $SCHEME"
