@@ -16,12 +16,16 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select latest Xcode 16
+      - name: Select newest Xcode
+        # Некоторые SwiftPM-зависимости требуют Swift tools 6.2 (Xcode 26),
+        # поэтому берём самый новый установленный Xcode, а не 16.x.
         run: |
-          LATEST=$(ls /Applications | grep -E '^Xcode_16' | sort -V | tail -1)
+          echo "Available Xcodes:"; ls /Applications | grep -E '^Xcode'
+          LATEST=$(ls /Applications | grep -E '^Xcode_[0-9]' | sort -V | tail -1)
           echo "Using $LATEST"
           sudo xcode-select -s "/Applications/$LATEST/Contents/Developer"
           xcodebuild -version
+          swift --version
 
       - name: Setup Node
         uses: actions/setup-node@v4
