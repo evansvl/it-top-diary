@@ -25,6 +25,7 @@ import {
 import { colors } from '@/theme/colors';
 
 const GITHUB_URL = 'https://github.com/evansvl/it-top-diary';
+const AEZA_URL = 'https://aeza.net';
 
 // Заголовок секции настроек.
 function SectionTitle({ title }: { title: string }) {
@@ -150,6 +151,15 @@ export default function SettingsScreen() {
             label="Очистить кэш данных"
             hint="Оценки, расписание и ДЗ загрузятся заново"
             onPress={onClearCache}
+          />
+        </View>
+
+        <SectionTitle title="Партнёры" />
+        <View className="overflow-hidden rounded-card bg-ink-800">
+          <SettingsRow
+            label="Нужен сервер для проекта?"
+            hint="Aeza — быстрый VPS-хостинг для твоих идей"
+            onPress={() => void Linking.openURL(AEZA_URL)}
           />
         </View>
       </ScrollView>

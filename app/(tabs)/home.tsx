@@ -1,10 +1,25 @@
-import { Pressable, ScrollView, Text } from 'react-native';
+import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
-import { useRouter } from 'expo-router';
+import { useRouter, type Href } from 'expo-router';
+import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/features/auth/authStore';
 import { HomeworkCard } from '@/components/home/HomeworkCard';
 import { GradesCard } from '@/components/home/GradesCard';
 import { ScheduleCard } from '@/components/home/ScheduleCard';
+import { colors } from '@/theme/colors';
+
+// Плитки дополнительных разделов (экраны корневого стека).
+const SECTION_TILES: {
+  href: Href;
+  icon: keyof typeof Ionicons.glyphMap;
+  label: string;
+}[] = [
+  { href: '/news', icon: 'newspaper-outline', label: 'Новости' },
+  { href: '/exams', icon: 'school-outline', label: 'Экзамены' },
+  { href: '/leaderboard', icon: 'trophy-outline', label: 'Рейтинг' },
+  { href: '/reviews', icon: 'chatbubbles-outline', label: 'Отзывы' },
+  { href: '/payments', icon: 'card-outline', label: 'Оплата' },
+];
 
 // Имя из ФИО (Фамилия Имя Отчество → Имя).
 function firstName(full?: string): string {
@@ -50,6 +65,22 @@ export default function HomeTab() {
         >
           <ScheduleCard />
         </Pressable>
+
+        {/* Дополнительные разделы */}
+        <View className="mt-4 flex-row flex-wrap gap-3">
+          {SECTION_TILES.map((t) => (
+            <Pressable
+              key={t.label}
+              onPress={() => router.push(t.href)}
+              className="w-[30%] grow items-center rounded-card bg-ink-800 py-4 active:opacity-70"
+            >
+              <Ionicons name={t.icon} size={22} color={colors.primaryLight} />
+              <Text className="mt-2 text-xs font-medium text-slate-200">
+                {t.label}
+              </Text>
+            </Pressable>
+          ))}
+        </View>
       </ScrollView>
     </SafeAreaView>
   );

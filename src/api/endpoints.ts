@@ -27,10 +27,36 @@ export const endpoints = {
   progress: {
     // Полный журнал занятий: посещаемость + оценки по всем предметам.
     studentVisits: '/progress/operations/student-visits',
+    // Журнал экзаменов: date, spec, teacher, mark, mark_type.
+    studentExams: '/progress/operations/student-exams',
   },
   schedule: {
     // Расписание на месяц: ?date_filter=YYYY-MM-DD (любой день месяца).
     getMonth: '/schedule/operations/get-month',
+  },
+  // Подтверждено HAR'ом веб-журнала (2026-06-11).
+  news: {
+    latest: '/news/operations/latest-news',
+    // ?news_id=N → { id_bbs, theme, time, text_bbs (HTML), is_viewed }
+    detail: '/news/operations/detail-news',
+  },
+  payment: {
+    // Следующий платёж + реквизиты.
+    index: '/payment/operations/index',
+    // Прошедшие оплаты: [{ date, amount, description, type }]
+    history: '/payment/operations/history',
+    // График платежей: [{ id, description, price, payment_date, status }]
+    schedule: '/payment/operations/schedule',
+  },
+  dashboard: {
+    leaderGroup: '/dashboard/progress/leader-group',
+    leaderGroupPoints: '/dashboard/progress/leader-group-points',
+    leaderStream: '/dashboard/progress/leader-stream',
+    leaderStreamPoints: '/dashboard/progress/leader-stream-points',
+  },
+  reviews: {
+    // Отзывы преподавателей о студенте.
+    list: '/reviews/index/list',
   },
 } as const;
 
