@@ -1,0 +1,75 @@
+name: iOS unsigned IPA (Sideloadly/AltStore)
+
+# Собирает НЕПОДПИСАННЫЙ .ipa с device-бинарником (arm64) на бесплатном
+# macOS-раннере. Такой .ipa нельзя поставить напрямую, но его пере-подписывает
+# Sideloadly/AltStore вашим бесплатным Apple ID (срок жизни подписи — 7 дней).
+# Запуск вручную: вкладка Actions → этот workflow → Run workflow.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Install JS deps
+        run: npm ci --legacy-peer-deps
+
+      - name: Expo prebuild (iOS native project)
+        run: npx expo prebuild -p ios --no-install
+        env:
+          CI: 1
+
+      - name: Install CocoaPods
+        working-directory: ios
+        run: pod install --repo-update
+
+      - name: Resolve workspace and scheme
+        id: xc
+        run: |
+          WS=$(ls ios | grep '\.xcworkspace$' | head -1)
+          SCHEME=$(xcodebuild -workspace "ios/$WS" -list -json \
+            | python3 -c "import sys,json;print(json.load(sys.stdin)['workspace']['schemes'][0])")
+          echo "workspace=$WS" >> "$GITHUB_OUTPUT"
+          echo "scheme=$SCHEME" >> "$GITHUB_OUTPUT"
+          echo "Workspace: $WS  Scheme: $SCHEME"
+
+      - name: Archive without code signing
+        run: |
+          set -eo pipefail
+          xcodebuild \
+            -workspace "ios/${{ steps.xc.outputs.workspace }}" \
+            -scheme "${{ steps.xc.outputs.scheme }}" \
+            -configuration Release \
+            -sdk iphoneos \
+            -archivePath "$RUNNER_TEMP/app.xcarchive" \
+            CODE_SIGNING_ALLOWED=NO \
+            CODE_SIGNING_REQUIRED=NO \
+            CODE_SIGN_IDENTITY="" \
+            CODE_SIGN_ENTITLEMENTS="" \
+            archive
+
+      - name: Package unsigned .ipa
+        run: |
+          set -eo pipefail
+          APP_DIR="$RUNNER_TEMP/app.xcarchive/Products/Applications"
+          APP_NAME=$(ls "$APP_DIR" | head -1)
+          mkdir -p "$RUNNER_TEMP/Payload"
+          cp -R "$APP_DIR/$APP_NAME" "$RUNNER_TEMP/Payload/"
+          (cd "$RUNNER_TEMP" && zip -qr ittop-unsigned.ipa Payload)
+          ls -lh "$RUNNER_TEMP/ittop-unsigned.ipa"
+
+      - name: Upload .ipa artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: ittop-unsigned-ipa
+          path: ${{ runner.temp }}/ittop-unsigned.ipa
+          if-no-files-found: error
