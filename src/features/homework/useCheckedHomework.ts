@@ -5,20 +5,33 @@ import type { HomeworkItem } from './types';
 
 // Страховка от бесконечного цикла (API повторяет страницы вне диапазона).
 const MAX_PAGES = 40;
+// Страницы тянем пачками параллельно: последовательная загрузка десятков
+// страниц занимала десятки секунд — поиск задания «не грузился».
+const PAGES_PER_BATCH = 5;
 
 // Все проверенные ДЗ (status 1) одним списком: листаем страницы, пока они
 // приносят новые id (см. квирк пагинации в useHomeworkList).
 async function fetchAllChecked(groupId: number): Promise<HomeworkItem[]> {
   const seen = new Set<number>();
   const items: HomeworkItem[] = [];
-  for (let page = 1; page <= MAX_PAGES; page += 1) {
-    const batch = await fetchHomeworkList({ page, status: 1, groupId });
-    const fresh = batch.filter((h) => !seen.has(h.id));
-    if (fresh.length === 0) break;
-    for (const h of fresh) {
-      seen.add(h.id);
-      items.push(h);
+  for (let page = 1; page <= MAX_PAGES; page += PAGES_PER_BATCH) {
+    const pages = Array.from(
+      { length: Math.min(PAGES_PER_BATCH, MAX_PAGES - page + 1) },
+      (_, i) => page + i,
+    );
+    const batches = await Promise.all(
+      pages.map((p) => fetchHomeworkList({ page: p, status: 1, groupId })),
+    );
+    let freshCount = 0;
+    for (const batch of batches) {
+      for (const h of batch) {
+        if (seen.has(h.id)) continue;
+        seen.add(h.id);
+        items.push(h);
+        freshCount += 1;
+      }
     }
+    if (freshCount === 0) break;
   }
   return items;
 }

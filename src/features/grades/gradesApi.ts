@@ -76,8 +76,9 @@ export async function fetchGrades(): Promise<GradesData> {
     }
     for (const { col, kind } of MARK_COLUMNS) {
       const value = v[col];
-      // >5 — легаси старой 12-балльной системы, не показываем вовсе
-      if (typeof value === 'number' && value >= 0 && value <= 5) {
+      // 0 — оценка не выставлена (плейсхолдер журнала), >5 — легаси старой
+      // 12-балльной системы; и то и другое не показываем вовсе
+      if (typeof value === 'number' && value >= 1 && value <= 5) {
         subj.marks.push({ value, date: v.date_visit, kind });
       }
     }

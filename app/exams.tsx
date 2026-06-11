@@ -31,7 +31,9 @@ function ExamRow({ item }: { item: ExamRecord }) {
             standard ? markColor(item.mark ?? 0) : 'text-subtle'
           }`}
         >
-          {item.mark != null ? String(item.mark) : '—'}
+          {/* Не-стандартные значения (например 20 при mark_type -20) — это
+              «оценка не выставлена», а не реальный балл */}
+          {standard ? String(item.mark) : '—'}
         </Text>
       </View>
     </View>

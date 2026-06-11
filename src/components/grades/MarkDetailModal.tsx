@@ -27,7 +27,10 @@ function HomeworkMatch({
   onOpenHomework: (item: HomeworkItem) => void;
 }) {
   const groupId = useAuthStore((s) => s.user?.groupId);
-  const { data, isLoading } = useCheckedHomework(groupId, true);
+  const { data, isLoading, isError, refetch } = useCheckedHomework(
+    groupId,
+    true,
+  );
   const homework = data
     ? findHomeworkForMark(
         data,
@@ -47,6 +50,18 @@ function HomeworkMatch({
           <ActivityIndicator size="small" color={colors.primaryLight} />
           <Text className="ml-3 text-sm text-muted">Ищем задание…</Text>
         </View>
+      ) : isError ? (
+        <Pressable
+          onPress={() => void refetch()}
+          className="flex-row items-center rounded-xl bg-canvas p-3 active:opacity-70"
+        >
+          <Text className="flex-1 text-sm text-danger">
+            Не удалось загрузить список работ
+          </Text>
+          <Text className="ml-2 text-sm font-medium text-primary-light">
+            Повторить
+          </Text>
+        </Pressable>
       ) : homework ? (
         <Pressable
           onPress={() => onOpenHomework(homework)}

@@ -200,8 +200,10 @@ export default function GradesTab() {
         onClose={() => setSelectedMark(null)}
         onOpenHomework={(hw) => {
           // Закрываем детали оценки и открываем ДЗ — без вложенных модалок.
+          // ДЗ открываем после анимации закрытия: два Modal, переключённые
+          // в одном кадре, на части устройств не показывают второй.
           setSelectedMark(null);
-          setSelectedHomework(hw);
+          setTimeout(() => setSelectedHomework(hw), 350);
         }}
       />
       <HomeworkDetailModal

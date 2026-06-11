@@ -1,4 +1,4 @@
-import { Alert, Image, Linking, Pressable, ScrollView, Text, View } from 'react-native';
+import { Alert, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter } from 'expo-router';
 import { ProfileCard } from '@/components/profile/ProfileCard';
@@ -37,21 +37,6 @@ export default function ProfileTab() {
         <View className="mt-6">
           <Button title="Выйти" variant="ghost" onPress={onLogout} />
         </View>
-
-        {/* Рекламный баннер (партнёрская ссылка aéza) */}
-        <Pressable
-          className="mt-6 active:opacity-80"
-          onPress={() =>
-            void Linking.openURL('https://aeza.net/?ref=613643')
-          }
-        >
-          <Image
-            source={{ uri: 'https://io.aeza.net/partner-banners/5181las.png' }}
-            style={{ width: '100%', aspectRatio: 728 / 90 }}
-            resizeMode="contain"
-            accessibilityLabel="aéza ref link"
-          />
-        </Pressable>
       </ScrollView>
     </SafeAreaView>
   );
