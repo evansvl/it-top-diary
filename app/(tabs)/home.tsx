@@ -35,13 +35,13 @@ export default function HomeTab() {
   const name = firstName(user?.fullName);
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <ScrollView
         contentContainerStyle={{ padding: 24 }}
         showsVerticalScrollIndicator={false}
       >
-        <Text className="text-sm text-slate-400">Привет,</Text>
-        <Text className="mt-1 text-2xl font-bold text-slate-50">
+        <Text className="text-sm text-muted">Привет,</Text>
+        <Text className="mt-1 text-2xl font-bold text-title">
           {name || 'студент'} 👋
         </Text>
 
@@ -72,10 +72,10 @@ export default function HomeTab() {
             <Pressable
               key={t.label}
               onPress={() => router.push(t.href)}
-              className="w-[30%] grow items-center rounded-card bg-ink-800 py-4 active:opacity-70"
+              className="w-[30%] grow items-center rounded-card bg-surface py-4 active:opacity-70"
             >
               <Ionicons name={t.icon} size={22} color={colors.primaryLight} />
-              <Text className="mt-2 text-xs font-medium text-slate-200">
+              <Text className="mt-2 text-xs font-medium text-body">
                 {t.label}
               </Text>
             </Pressable>

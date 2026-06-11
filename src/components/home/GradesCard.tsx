@@ -8,10 +8,10 @@ export function GradesCard() {
   const att = data?.attendanceRate;
 
   return (
-    <View className="mt-4 rounded-card bg-ink-800 p-5">
+    <View className="mt-4 rounded-card bg-surface p-5">
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-slate-50">Оценки</Text>
-        <Text className="ml-2 text-lg text-slate-500">›</Text>
+        <Text className="text-base font-semibold text-title">Оценки</Text>
+        <Text className="ml-2 text-lg text-faint">›</Text>
       </View>
 
       {isLoading ? (
@@ -24,13 +24,13 @@ export function GradesCard() {
             <Text className="text-2xl font-bold text-primary-light">
               {avg != null ? avg.toFixed(2) : '—'}
             </Text>
-            <Text className="mt-1 text-xs text-slate-400">Средний балл</Text>
+            <Text className="mt-1 text-xs text-muted">Средний балл</Text>
           </View>
           <View className="flex-1 items-center">
             <Text className="text-2xl font-bold text-success">
               {att != null ? `${Math.round(att * 100)}%` : '—'}
             </Text>
-            <Text className="mt-1 text-xs text-slate-400">Посещаемость</Text>
+            <Text className="mt-1 text-xs text-muted">Посещаемость</Text>
           </View>
         </View>
       )}

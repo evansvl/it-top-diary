@@ -3,6 +3,7 @@ import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useAutoUpdateCheck } from '@/features/updates/useAutoUpdateCheck';
 import { colors } from '@/theme/colors';
+import { useTheme } from '@/theme/useColorScheme';
 
 // Главная вкладка по умолчанию.
 export const unstable_settings = { initialRouteName: 'home' };
@@ -11,6 +12,7 @@ export const unstable_settings = { initialRouteName: 'home' };
 // (срабатывает и после выхода из профиля).
 export default function TabsLayout() {
   const status = useAuthStore((s) => s.status);
+  const { palette } = useTheme();
   // Тихая проверка обновлений после входа (один раз за запуск)
   useAutoUpdateCheck();
   if (status !== 'authenticated') return <Redirect href="/(auth)/login" />;
@@ -20,10 +22,10 @@ export default function TabsLayout() {
       screenOptions={{
         headerShown: false,
         tabBarActiveTintColor: colors.primary,
-        tabBarInactiveTintColor: colors.dark.textMuted,
+        tabBarInactiveTintColor: palette.textMuted,
         tabBarStyle: {
-          backgroundColor: colors.dark.card,
-          borderTopColor: colors.dark.border,
+          backgroundColor: palette.card,
+          borderTopColor: palette.border,
         },
       }}
     >

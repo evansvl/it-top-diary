@@ -1,3 +1,34 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+/* Семантические токены темы. Значения — компоненты RGB через пробел
+   (формат NativeWind «rgb(var(--x) / <alpha-value>)»). По умолчанию —
+   светлая палитра; класс .dark (его вешает NativeWind при colorScheme=dark)
+   переопределяет на тёмную. Тёмные значения 1:1 с прежними ink/slate,
+   поэтому тёмная тема выглядит как раньше. */
+@layer base {
+  :root {
+    --canvas: 244 247 251;
+    --surface: 255 255 255;
+    --elevated: 238 242 248;
+    --hairline: 220 227 236;
+    --title: 15 23 42;
+    --body: 30 41 59;
+    --subtle: 71 85 105;
+    --muted: 100 116 139;
+    --faint: 148 163 184;
+  }
+
+  .dark:root {
+    --canvas: 11 18 32;
+    --surface: 17 26 43;
+    --elevated: 27 39 61;
+    --hairline: 39 52 77;
+    --title: 248 250 252;
+    --body: 226 232 240;
+    --subtle: 203 213 225;
+    --muted: 148 163 184;
+    --faint: 100 116 139;
+  }
+}

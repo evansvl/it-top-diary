@@ -31,15 +31,15 @@ export function SettingsRow({
       onPress={onPress}
       disabled={!onPress}
       className={`flex-row items-center justify-between px-4 py-3.5 active:opacity-70 ${
-        border ? 'border-b border-ink-700' : ''
+        border ? 'border-b border-hairline' : ''
       }`}
     >
       <View className="mr-3 flex-1">
-        <Text className={`text-sm ${danger ? 'text-danger' : 'text-slate-100'}`}>
+        <Text className={`text-sm ${danger ? 'text-danger' : 'text-body'}`}>
           {label}
         </Text>
         {hint ? (
-          <Text className="mt-0.5 text-xs text-slate-500">{hint}</Text>
+          <Text className="mt-0.5 text-xs text-faint">{hint}</Text>
         ) : null}
       </View>
       {onSwitch ? (
@@ -51,9 +51,9 @@ export function SettingsRow({
           thumbColor="#FFFFFF"
         />
       ) : value ? (
-        <Text className="text-sm text-slate-400">{value}</Text>
+        <Text className="text-sm text-muted">{value}</Text>
       ) : onPress ? (
-        <Text className="text-lg text-slate-500">›</Text>
+        <Text className="text-lg text-faint">›</Text>
       ) : null}
     </Pressable>
   );

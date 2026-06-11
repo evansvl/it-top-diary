@@ -29,7 +29,7 @@ function HomeworkRow({
   return (
     <Pressable
       onPress={onPress}
-      className="mb-3 flex-row rounded-card bg-ink-800 p-4 active:opacity-70"
+      className="mb-3 flex-row rounded-card bg-surface p-4 active:opacity-70"
     >
       {item.coverImageUrl ? (
         <Image
@@ -38,20 +38,20 @@ function HomeworkRow({
         />
       ) : null}
       <View className="flex-1">
-        <Text className="text-xs text-slate-400" numberOfLines={1}>
+        <Text className="text-xs text-muted" numberOfLines={1}>
           {item.subject}
         </Text>
         <Text
-          className="mt-0.5 text-base font-semibold text-slate-50"
+          className="mt-0.5 text-base font-semibold text-title"
           numberOfLines={2}
         >
           {item.theme}
         </Text>
-        <Text className="mt-1 text-xs text-slate-500" numberOfLines={1}>
+        <Text className="mt-1 text-xs text-faint" numberOfLines={1}>
           {item.teacher}
         </Text>
         <View className="mt-2 flex-row items-center justify-between">
-          <Text className="text-xs text-slate-400">
+          <Text className="text-xs text-muted">
             Дедлайн {formatDate(item.overdueAt)}
           </Text>
           {item.mark != null ? (
@@ -110,9 +110,9 @@ export default function HomeworkTab() {
   const sections = groupByDay(dedupeById(data?.pages.flat() ?? []));
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <View className="px-4 py-2">
-        <Text className="text-xl font-bold text-slate-50">
+        <Text className="text-xl font-bold text-title">
           Домашние задания
         </Text>
       </View>
@@ -131,12 +131,12 @@ export default function HomeworkTab() {
                 key={s.value}
                 onPress={() => setStatus(s.value)}
                 className={`rounded-full px-3 py-1.5 ${
-                  active ? 'bg-primary' : 'bg-ink-800'
+                  active ? 'bg-primary' : 'bg-surface'
                 }`}
               >
                 <Text
                   className={`text-xs font-medium ${
-                    active ? 'text-white' : 'text-slate-300'
+                    active ? 'text-white' : 'text-subtle'
                   }`}
                 >
                   {s.label}
@@ -148,7 +148,7 @@ export default function HomeworkTab() {
       </View>
 
       {groupId == null ? (
-        <Text className="px-4 text-sm text-slate-400">
+        <Text className="px-4 text-sm text-muted">
           Группа не определена — войдите заново.
         </Text>
       ) : isLoading ? (
@@ -158,9 +158,9 @@ export default function HomeworkTab() {
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
             onPress={() => refetch()}
-            className="mt-3 rounded-full bg-ink-800 px-4 py-2 active:opacity-70"
+            className="mt-3 rounded-full bg-surface px-4 py-2 active:opacity-70"
           >
-            <Text className="text-sm text-slate-200">Повторить</Text>
+            <Text className="text-sm text-body">Повторить</Text>
           </Pressable>
         </View>
       ) : (
@@ -171,7 +171,7 @@ export default function HomeworkTab() {
             <HomeworkRow item={item} onPress={() => setSelected(item)} />
           )}
           renderSectionHeader={({ section }) => (
-            <Text className="mb-2 mt-1 text-xs font-bold uppercase text-slate-400">
+            <Text className="mb-2 mt-1 text-xs font-bold uppercase text-muted">
               {section.title}
             </Text>
           )}
@@ -183,7 +183,7 @@ export default function HomeworkTab() {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();
           }}
           ListEmptyComponent={
-            <Text className="mt-8 text-center text-sm text-slate-400">
+            <Text className="mt-8 text-center text-sm text-muted">
               Здесь пусто
             </Text>
           }

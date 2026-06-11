@@ -7,7 +7,7 @@ import { formatDate } from '@/lib/date';
 
 function SectionTitle({ title }: { title: string }) {
   return (
-    <Text className="mb-2 mt-6 px-1 text-xs uppercase text-slate-500">
+    <Text className="mb-2 mt-6 px-1 text-xs uppercase text-faint">
       {title}
     </Text>
   );
@@ -20,15 +20,15 @@ function PaymentsContent({ data }: { data: PaymentsData }) {
       showsVerticalScrollIndicator={false}
     >
       {data.next && data.next.amount != null ? (
-        <View className="rounded-card bg-ink-800 p-5">
-          <Text className="text-xs uppercase text-slate-500">
+        <View className="rounded-card bg-surface p-5">
+          <Text className="text-xs uppercase text-faint">
             Следующий платёж
           </Text>
           <Text className="mt-2 text-3xl font-extrabold text-primary-light">
             {formatRub(data.next.amount)}
           </Text>
           {data.next.date ? (
-            <Text className="mt-1 text-sm text-slate-400">
+            <Text className="mt-1 text-sm text-muted">
               до {formatDate(data.next.date)}
               {data.next.purpose ? ` · ${data.next.purpose}` : ''}
             </Text>
@@ -40,8 +40,8 @@ function PaymentsContent({ data }: { data: PaymentsData }) {
           ) : null}
         </View>
       ) : (
-        <View className="rounded-card bg-ink-800 p-5">
-          <Text className="text-sm text-slate-400">
+        <View className="rounded-card bg-surface p-5">
+          <Text className="text-sm text-muted">
             Данных о следующем платеже нет
           </Text>
         </View>
@@ -50,21 +50,21 @@ function PaymentsContent({ data }: { data: PaymentsData }) {
       {data.schedule.length > 0 ? (
         <>
           <SectionTitle title="График платежей" />
-          <View className="overflow-hidden rounded-card bg-ink-800">
+          <View className="overflow-hidden rounded-card bg-surface">
             {data.schedule.map((p, i) => (
               <View
                 key={p.id}
                 className={`flex-row items-center justify-between px-4 py-3.5 ${
-                  i < data.schedule.length - 1 ? 'border-b border-ink-700' : ''
+                  i < data.schedule.length - 1 ? 'border-b border-hairline' : ''
                 }`}
               >
                 <View className="mr-3 flex-1">
-                  <Text className="text-sm text-slate-100">{p.description}</Text>
-                  <Text className="mt-0.5 text-xs text-slate-500">
+                  <Text className="text-sm text-body">{p.description}</Text>
+                  <Text className="mt-0.5 text-xs text-faint">
                     до {formatDate(p.date)}
                   </Text>
                 </View>
-                <Text className="text-sm font-semibold text-slate-50">
+                <Text className="text-sm font-semibold text-title">
                   {formatRub(p.price)}
                 </Text>
               </View>
@@ -76,21 +76,21 @@ function PaymentsContent({ data }: { data: PaymentsData }) {
       {data.history.length > 0 ? (
         <>
           <SectionTitle title="История оплат" />
-          <View className="overflow-hidden rounded-card bg-ink-800">
+          <View className="overflow-hidden rounded-card bg-surface">
             {data.history.map((p, i) => (
               <View
                 key={`${p.date}-${i}`}
                 className={`flex-row items-center justify-between px-4 py-3.5 ${
-                  i < data.history.length - 1 ? 'border-b border-ink-700' : ''
+                  i < data.history.length - 1 ? 'border-b border-hairline' : ''
                 }`}
               >
                 <View className="mr-3 flex-1">
-                  <Text className="text-sm text-slate-100">
+                  <Text className="text-sm text-body">
                     {formatDate(p.date)}
                   </Text>
                   {p.description ? (
                     <Text
-                      className="mt-0.5 text-xs text-slate-500"
+                      className="mt-0.5 text-xs text-faint"
                       numberOfLines={2}
                     >
                       {p.description}
@@ -113,7 +113,7 @@ export default function PaymentsScreen() {
   const { data, isLoading, isError, refetch } = usePayments();
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <ScreenHeader title="Оплата обучения" />
 
       {isLoading ? (
@@ -123,9 +123,9 @@ export default function PaymentsScreen() {
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
             onPress={() => refetch()}
-            className="mt-3 rounded-full bg-ink-800 px-4 py-2 active:opacity-70"
+            className="mt-3 rounded-full bg-surface px-4 py-2 active:opacity-70"
           >
-            <Text className="text-sm text-slate-200">Повторить</Text>
+            <Text className="text-sm text-body">Повторить</Text>
           </Pressable>
         </View>
       ) : (

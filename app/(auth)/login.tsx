@@ -12,7 +12,7 @@ export default function LoginScreen() {
   if (status === 'authenticated') return <Redirect href="/home" />;
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900">
+    <SafeAreaView className="flex-1 bg-canvas">
       <KeyboardAvoidingView
         behavior={Platform.OS === 'ios' ? 'padding' : undefined}
         className="flex-1"

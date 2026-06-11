@@ -21,6 +21,17 @@ module.exports = {
           700: '#1B273D', // поднятые элементы
           600: '#27344D', // бордеры
         },
+        // Семантические токены темы (см. global.css). Переключаются между
+        // светлой и тёмной палитрой — используем их вместо ink/slate.
+        canvas: 'rgb(var(--canvas) / <alpha-value>)', // основной фон
+        surface: 'rgb(var(--surface) / <alpha-value>)', // карточки
+        elevated: 'rgb(var(--elevated) / <alpha-value>)', // поднятые элементы
+        hairline: 'rgb(var(--hairline) / <alpha-value>)', // бордеры
+        title: 'rgb(var(--title) / <alpha-value>)', // заголовки
+        body: 'rgb(var(--body) / <alpha-value>)', // основной текст
+        subtle: 'rgb(var(--subtle) / <alpha-value>)', // второстепенный текст
+        muted: 'rgb(var(--muted) / <alpha-value>)', // приглушённый текст
+        faint: 'rgb(var(--faint) / <alpha-value>)', // самый бледный текст
         // Семантические цвета оценок/статусов
         success: '#22C55E',
         warning: '#F59E0B',

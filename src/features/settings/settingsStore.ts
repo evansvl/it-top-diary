@@ -1,5 +1,6 @@
 import { create } from 'zustand';
 import { loadAppSettings, saveAppSettings } from '@/lib/secureStore';
+import type { ThemeMode } from '@/theme/colors';
 
 // Пользовательские настройки приложения. Хранятся в SecureStore (app.settings),
 // восстанавливаются при запуске из корневого layout.
@@ -7,10 +8,13 @@ import { loadAppSettings, saveAppSettings } from '@/lib/secureStore';
 export type AppSettings = {
   /** Проверять обновления на GitHub при запуске */
   autoCheckUpdates: boolean;
+  /** Тема оформления (по умолчанию тёмная) */
+  theme: ThemeMode;
 };
 
 const DEFAULTS: AppSettings = {
   autoCheckUpdates: true,
+  theme: 'dark',
 };
 
 type SettingsState = AppSettings & {
@@ -30,7 +34,7 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
 
   setSetting: (key, value) => {
     set({ [key]: value } as Pick<AppSettings, typeof key>);
-    const { autoCheckUpdates } = get();
-    void saveAppSettings<AppSettings>({ autoCheckUpdates });
+    const { autoCheckUpdates, theme } = get();
+    void saveAppSettings<AppSettings>({ autoCheckUpdates, theme });
   },
 }));

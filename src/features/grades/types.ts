@@ -74,12 +74,12 @@ export function markColor(value: number): string {
   if (value >= 4 && value <= 5) return 'text-success';
   if (value === 3) return 'text-warning';
   if (value >= 0 && value <= 2) return 'text-danger';
-  return 'text-slate-300';
+  return 'text-subtle';
 }
 
 export function markBg(value: number): string {
   if (value >= 4 && value <= 5) return 'bg-success/20';
   if (value >= 0 && value <= 2) return 'bg-danger/20';
   if (value === 3) return 'bg-warning/20';
-  return 'bg-ink-700';
+  return 'bg-elevated';
 }

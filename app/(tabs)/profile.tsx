@@ -18,15 +18,15 @@ export default function ProfileTab() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <View className="px-4 py-2">
-        <Text className="text-xl font-bold text-slate-50">Профиль</Text>
+        <Text className="text-xl font-bold text-title">Профиль</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
         <ProfileCard />
 
-        <View className="mt-6 overflow-hidden rounded-card bg-ink-800">
+        <View className="mt-6 overflow-hidden rounded-card bg-surface">
           <SettingsRow
             label="Настройки"
             hint="Автовход, обновления, кэш"

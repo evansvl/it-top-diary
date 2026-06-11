@@ -16,19 +16,14 @@ export const TextField = forwardRef<TextInput, Props>(
 
     return (
       <View className="mb-4 w-full">
-        <Text className="mb-2 text-sm font-medium text-ink-600 dark:text-slate-300">
-          {label}
-        </Text>
+        <Text className="mb-2 text-sm font-medium text-subtle">{label}</Text>
         <TextInput
           ref={ref}
           placeholderTextColor={palette.textMuted}
           className={[
             'h-14 rounded-2xl border px-4 text-base',
-            'bg-white text-ink-900',
-            'dark:bg-ink-800 dark:text-slate-100',
-            hasError
-              ? 'border-danger'
-              : 'border-slate-200 dark:border-ink-600',
+            'bg-surface text-body',
+            hasError ? 'border-danger' : 'border-hairline',
           ].join(' ')}
           {...rest}
         />

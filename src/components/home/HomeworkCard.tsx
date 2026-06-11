@@ -14,7 +14,7 @@ function Cell({
   return (
     <View className="flex-1 items-center">
       <Text className={`text-2xl font-bold ${color}`}>{value}</Text>
-      <Text className="mt-1 text-center text-xs text-slate-400">{label}</Text>
+      <Text className="mt-1 text-center text-xs text-muted">{label}</Text>
     </View>
   );
 }
@@ -24,16 +24,16 @@ export function HomeworkCard() {
   const { data, isLoading, isError } = useHomeworkCounts();
 
   return (
-    <View className="mt-4 rounded-card bg-ink-800 p-5">
+    <View className="mt-4 rounded-card bg-surface p-5">
       <View className="flex-row items-center justify-between">
-        <Text className="text-base font-semibold text-slate-50">
+        <Text className="text-base font-semibold text-title">
           Домашние задания
         </Text>
         <View className="flex-row items-center">
           {data ? (
-            <Text className="text-sm text-slate-400">Всего: {data.total}</Text>
+            <Text className="text-sm text-muted">Всего: {data.total}</Text>
           ) : null}
-          <Text className="ml-2 text-lg text-slate-500">›</Text>
+          <Text className="ml-2 text-lg text-faint">›</Text>
         </View>
       </View>
 

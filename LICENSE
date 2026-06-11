@@ -1,0 +1,69 @@
+IT Top — Электронный дневник
+Проприетарная лицензия (Proprietary License)
+
+Copyright (c) 2026 evansvl. Все права защищены. / All rights reserved.
+
+================================================================
+РУССКАЯ ВЕРСИЯ
+================================================================
+
+Это программное обеспечение и его исходный код (далее «ПО»)
+предоставляются исключительно для ознакомления и личного некоммерческого
+использования конечными пользователями (установка собранного приложения
+и вход в собственный аккаунт веб-журнала).
+
+ЗАПРЕЩАЕТСЯ без предварительного письменного разрешения
+правообладателя (evansvl):
+
+1. Копировать, воспроизводить, публиковать или распространять исходный
+   код или его части в любой форме.
+2. Изменять, адаптировать, переводить, создавать производные работы
+   на основе ПО или его исходного кода.
+3. Использовать ПО, его код, архитектуру, дизайн или название в
+   коммерческих целях.
+4. Перепубликовывать приложение (целиком или частично) в магазинах
+   приложений, на сторонних сайтах или под другим именем.
+5. Удалять или изменять уведомления об авторских правах.
+
+Исходный код размещён в открытом репозитории ИСКЛЮЧИТЕЛЬНО в целях
+прозрачности и проверки безопасности пользователями. Открытость
+репозитория НЕ означает передачу каких-либо прав на использование,
+копирование или распространение.
+
+Для получения разрешения на любое из перечисленных действий свяжитесь
+с правообладателем через GitHub: https://github.com/evansvl
+
+================================================================
+ENGLISH VERSION
+================================================================
+
+This software and its source code (the "Software") are provided solely
+for review and personal, non-commercial use by end users (installing the
+compiled application and signing in to one's own web-journal account).
+
+WITHOUT the prior written permission of the copyright holder (evansvl),
+you MAY NOT:
+
+1. Copy, reproduce, publish or distribute the source code or any part
+   of it in any form.
+2. Modify, adapt, translate, or create derivative works based on the
+   Software or its source code.
+3. Use the Software, its code, architecture, design, or name for any
+   commercial purpose.
+4. Republish the application (in whole or in part) on app stores, third-
+   party websites, or under a different name.
+5. Remove or alter any copyright notices.
+
+The source code is published in a public repository SOLELY for the
+purpose of transparency and security review by users. The repository
+being public does NOT grant any rights to use, copy, or distribute it.
+
+To request permission for any of the above, contact the copyright holder
+via GitHub: https://github.com/evansvl
+
+THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS
+OR IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF
+MERCHANTABILITY, FITNESS FOR A PARTICULAR PURPOSE AND NONINFRINGEMENT.
+IN NO EVENT SHALL THE AUTHOR BE LIABLE FOR ANY CLAIM, DAMAGES OR OTHER
+LIABILITY ARISING FROM, OUT OF OR IN CONNECTION WITH THE SOFTWARE OR THE
+USE OR OTHER DEALINGS IN THE SOFTWARE.

@@ -20,8 +20,8 @@ function initials(name: string): string {
 function Stat({ label, value }: { label: string; value?: number }) {
   return (
     <View className="flex-1 items-center">
-      <Text className="text-xl font-bold text-slate-50">{value ?? '—'}</Text>
-      <Text className="mt-1 text-xs text-slate-400">{label}</Text>
+      <Text className="text-xl font-bold text-title">{value ?? '—'}</Text>
+      <Text className="mt-1 text-xs text-muted">{label}</Text>
     </View>
   );
 }
@@ -34,7 +34,7 @@ export function ProfileCard() {
   return (
     <Animated.View
       entering={FadeInDown.duration(400)}
-      className="rounded-card bg-ink-800 p-6"
+      className="rounded-card bg-surface p-6"
     >
       <View className="items-center">
         {user?.avatarUrl ? (
@@ -50,20 +50,20 @@ export function ProfileCard() {
           </View>
         )}
 
-        <Text className="mt-4 text-center text-2xl font-bold text-slate-50">
+        <Text className="mt-4 text-center text-2xl font-bold text-title">
           {name}
         </Text>
 
         {user?.stream ? (
-          <Text className="mt-1 text-center text-sm text-slate-400">
+          <Text className="mt-1 text-center text-sm text-muted">
             {user.stream}
           </Text>
         ) : null}
 
         <View className="mt-3 flex-row flex-wrap justify-center gap-2">
           {user?.role ? (
-            <View className="rounded-full bg-ink-700 px-3 py-1">
-              <Text className="text-xs font-medium text-slate-300">
+            <View className="rounded-full bg-elevated px-3 py-1">
+              <Text className="text-xs font-medium text-subtle">
                 {ROLE_LABEL[user.role]}
               </Text>
             </View>
@@ -78,12 +78,12 @@ export function ProfileCard() {
         </View>
 
         {user?.cityName ? (
-          <Text className="mt-2 text-sm text-slate-400">{user.cityName}</Text>
+          <Text className="mt-2 text-sm text-muted">{user.cityName}</Text>
         ) : null}
       </View>
 
       {user?.level != null || user?.achievements != null || user?.points != null ? (
-        <View className="mt-6 flex-row border-t border-ink-700 pt-4">
+        <View className="mt-6 flex-row border-t border-hairline pt-4">
           <Stat label="Уровень" value={user?.level} />
           <Stat label="Достижения" value={user?.achievements} />
           <Stat label="Баллы" value={user?.points} />

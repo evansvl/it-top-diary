@@ -50,7 +50,7 @@ function FileButton({ label, url, fallbackName }: {
   return (
     <Pressable
       onPress={() => void onPress()}
-      className="mt-3 flex-row items-center rounded-xl bg-ink-700 px-4 py-3 active:opacity-70"
+      className="mt-3 flex-row items-center rounded-xl bg-elevated px-4 py-3 active:opacity-70"
     >
       <Ionicons
         name={busy ? 'hourglass-outline' : 'download-outline'}
@@ -127,7 +127,7 @@ function SubmitForm({
 
   return (
     <View className="mt-5">
-      <Text className="mb-2 text-xs uppercase text-slate-500">{title}</Text>
+      <Text className="mb-2 text-xs uppercase text-faint">{title}</Text>
 
       <TextInput
         value={answerText}
@@ -136,12 +136,12 @@ function SubmitForm({
         placeholderTextColor={colors.dark.textMuted}
         multiline
         textAlignVertical="top"
-        className="min-h-[88px] rounded-xl border border-ink-600 bg-ink-900 px-4 py-3 text-sm text-slate-100"
+        className="min-h-[88px] rounded-xl border border-hairline bg-canvas px-4 py-3 text-sm text-body"
       />
 
       <Pressable
         onPress={() => void pickFile()}
-        className="mt-3 flex-row items-center rounded-xl border border-dashed border-ink-600 px-4 py-3 active:opacity-70"
+        className="mt-3 flex-row items-center rounded-xl border border-dashed border-hairline px-4 py-3 active:opacity-70"
       >
         <Ionicons
           name={file ? 'document-attach-outline' : 'attach-outline'}
@@ -150,7 +150,7 @@ function SubmitForm({
         />
         <Text
           className={`ml-2 flex-1 text-sm ${
-            file ? 'text-primary-light' : 'text-slate-400'
+            file ? 'text-primary-light' : 'text-muted'
           }`}
           numberOfLines={1}
         >
@@ -164,23 +164,23 @@ function SubmitForm({
       </Pressable>
 
       <View className="mt-3 flex-row items-center">
-        <Text className="mr-3 text-sm text-slate-400">Потрачено времени:</Text>
+        <Text className="mr-3 text-sm text-muted">Потрачено времени:</Text>
         <TextInput
           value={hours}
           onChangeText={setHours}
           keyboardType="number-pad"
           maxLength={2}
-          className="w-12 rounded-lg border border-ink-600 bg-ink-900 px-2 py-1.5 text-center text-sm text-slate-100"
+          className="w-12 rounded-lg border border-hairline bg-canvas px-2 py-1.5 text-center text-sm text-body"
         />
-        <Text className="mx-1.5 text-sm text-slate-400">ч</Text>
+        <Text className="mx-1.5 text-sm text-muted">ч</Text>
         <TextInput
           value={minutes}
           onChangeText={setMinutes}
           keyboardType="number-pad"
           maxLength={2}
-          className="w-12 rounded-lg border border-ink-600 bg-ink-900 px-2 py-1.5 text-center text-sm text-slate-100"
+          className="w-12 rounded-lg border border-hairline bg-canvas px-2 py-1.5 text-center text-sm text-body"
         />
-        <Text className="mx-1.5 text-sm text-slate-400">мин</Text>
+        <Text className="mx-1.5 text-sm text-muted">мин</Text>
       </View>
 
       <View className="mt-4">
@@ -208,13 +208,13 @@ function SubmissionBlock({
 
   return (
     <>
-      <View className="mt-5 rounded-xl bg-ink-900 p-3">
-        <Text className="text-xs uppercase text-slate-500">
+      <View className="mt-5 rounded-xl bg-canvas p-3">
+        <Text className="text-xs uppercase text-faint">
           Сданная работа
           {sub.submittedAt ? ` · ${formatDate(sub.submittedAt)}` : ''}
         </Text>
         {sub.answerText ? (
-          <Text className="mt-1 text-sm leading-5 text-slate-200">
+          <Text className="mt-1 text-sm leading-5 text-body">
             {sub.answerText}
           </Text>
         ) : null}
@@ -239,7 +239,7 @@ function SubmissionBlock({
       {canResubmit && !resubmitting ? (
         <Pressable
           onPress={() => setResubmitting(true)}
-          className="mt-3 flex-row items-center justify-center rounded-xl border border-ink-600 px-4 py-3 active:opacity-70"
+          className="mt-3 flex-row items-center justify-center rounded-xl border border-hairline px-4 py-3 active:opacity-70"
         >
           <Ionicons name="refresh-outline" size={18} color={colors.primaryLight} />
           <Text className="ml-2 text-sm font-medium text-primary-light">
@@ -281,11 +281,11 @@ export function HomeworkDetailModal({
         {/* Тап по затемнению — закрыть */}
         <Pressable className="flex-1" onPress={onClose} />
         {item ? (
-          <View className="max-h-[85%] rounded-t-3xl bg-ink-800 px-5 pb-8 pt-4">
+          <View className="max-h-[85%] rounded-t-3xl bg-surface px-5 pb-8 pt-4">
             <View className="mb-3 flex-row items-start justify-between">
               <View className="flex-1 pr-3">
-                <Text className="text-xs text-slate-400">{item.subject}</Text>
-                <Text className="mt-1 text-lg font-bold text-slate-50">
+                <Text className="text-xs text-muted">{item.subject}</Text>
+                <Text className="mt-1 text-lg font-bold text-title">
                   {item.theme}
                 </Text>
               </View>
@@ -298,8 +298,8 @@ export function HomeworkDetailModal({
               showsVerticalScrollIndicator={false}
               keyboardShouldPersistTaps="handled"
             >
-              <Text className="text-xs text-slate-500">{item.teacher}</Text>
-              <Text className="mt-1 text-xs text-slate-400">
+              <Text className="text-xs text-faint">{item.teacher}</Text>
+              <Text className="mt-1 text-xs text-muted">
                 Выдано {formatDate(item.createdAt)} · дедлайн{' '}
                 {formatDate(item.overdueAt)}
               </Text>
@@ -310,11 +310,11 @@ export function HomeworkDetailModal({
               ) : null}
 
               {item.comment ? (
-                <View className="mt-4 rounded-xl bg-ink-900 p-3">
-                  <Text className="text-xs uppercase text-slate-500">
+                <View className="mt-4 rounded-xl bg-canvas p-3">
+                  <Text className="text-xs uppercase text-faint">
                     Комментарий
                   </Text>
-                  <Text className="mt-1 text-sm leading-5 text-slate-200">
+                  <Text className="mt-1 text-sm leading-5 text-body">
                     {item.comment}
                   </Text>
                 </View>

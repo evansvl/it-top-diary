@@ -1,11 +1,12 @@
 import { Pressable, Text, View } from 'react-native';
 import { Ionicons } from '@expo/vector-icons';
 import { useRouter } from 'expo-router';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/theme/useColorScheme';
 
 // Шапка экрана корневого стека: «назад» + заголовок (как в настройках).
 export function ScreenHeader({ title }: { title: string }) {
   const router = useRouter();
+  const { palette } = useTheme();
   return (
     <View className="flex-row items-center gap-2 px-2 py-2">
       <Pressable
@@ -13,9 +14,9 @@ export function ScreenHeader({ title }: { title: string }) {
         hitSlop={8}
         className="p-2 active:opacity-60"
       >
-        <Ionicons name="chevron-back" size={24} color={colors.dark.text} />
+        <Ionicons name="chevron-back" size={24} color={palette.text} />
       </Pressable>
-      <Text className="text-xl font-bold text-slate-50">{title}</Text>
+      <Text className="text-xl font-bold text-title">{title}</Text>
     </View>
   );
 }

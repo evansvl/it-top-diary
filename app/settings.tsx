@@ -22,7 +22,7 @@ import {
   saveCredentials,
   type SavedCredentials,
 } from '@/lib/secureStore';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/theme/useColorScheme';
 
 const GITHUB_URL = 'https://github.com/evansvl/it-top-diary';
 const AEZA_URL = 'https://aeza.net';
@@ -30,7 +30,7 @@ const AEZA_URL = 'https://aeza.net';
 // Заголовок секции настроек.
 function SectionTitle({ title }: { title: string }) {
   return (
-    <Text className="mb-2 mt-6 px-1 text-xs uppercase text-slate-500">
+    <Text className="mb-2 mt-6 px-1 text-xs uppercase text-faint">
       {title}
     </Text>
   );
@@ -38,7 +38,9 @@ function SectionTitle({ title }: { title: string }) {
 
 export default function SettingsScreen() {
   const router = useRouter();
+  const { palette, isDark } = useTheme();
   const autoCheckUpdates = useSettingsStore((s) => s.autoCheckUpdates);
+  const theme = useSettingsStore((s) => s.theme);
   const setSetting = useSettingsStore((s) => s.setSetting);
 
   // Сохранённые учётные данные — для переключателя автовхода.
@@ -87,21 +89,21 @@ export default function SettingsScreen() {
   };
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <View className="flex-row items-center gap-2 px-2 py-2">
         <Pressable
           onPress={() => router.back()}
           hitSlop={8}
           className="p-2 active:opacity-60"
         >
-          <Ionicons name="chevron-back" size={24} color={colors.dark.text} />
+          <Ionicons name="chevron-back" size={24} color={palette.text} />
         </Pressable>
-        <Text className="text-xl font-bold text-slate-50">Настройки</Text>
+        <Text className="text-xl font-bold text-title">Настройки</Text>
       </View>
 
       <ScrollView contentContainerStyle={{ padding: 16, paddingBottom: 32 }}>
         <SectionTitle title="Аккаунт" />
-        <View className="overflow-hidden rounded-card bg-ink-800">
+        <View className="overflow-hidden rounded-card bg-surface">
           <SettingsRow
             label="Автовход"
             hint={
@@ -121,10 +123,20 @@ export default function SettingsScreen() {
           />
         </View>
 
+        <SectionTitle title="Оформление" />
+        <View className="overflow-hidden rounded-card bg-surface">
+          <SettingsRow
+            label="Тёмная тема"
+            hint={isDark ? 'Тёмное оформление' : 'Светлое оформление'}
+            switchValue={theme === 'dark'}
+            onSwitch={(v) => setSetting('theme', v ? 'dark' : 'light')}
+          />
+        </View>
+
         {Platform.OS === 'android' ? (
           <>
             <SectionTitle title="Обновления" />
-            <View className="overflow-hidden rounded-card bg-ink-800">
+            <View className="overflow-hidden rounded-card bg-surface">
               <SettingsRow
                 label="Проверять при запуске"
                 hint="Сообщать о новых версиях на GitHub"
@@ -139,7 +151,7 @@ export default function SettingsScreen() {
         ) : null}
 
         <SectionTitle title="О приложении" />
-        <View className="overflow-hidden rounded-card bg-ink-800">
+        <View className="overflow-hidden rounded-card bg-surface">
           <SettingsRow label="Версия" value={CURRENT_VERSION} border />
           <SettingsRow
             label="GitHub"
@@ -155,7 +167,7 @@ export default function SettingsScreen() {
         </View>
 
         <SectionTitle title="Партнёры" />
-        <View className="overflow-hidden rounded-card bg-ink-800">
+        <View className="overflow-hidden rounded-card bg-surface">
           <SettingsRow
             label="Нужен сервер для проекта?"
             hint="Aeza — быстрый VPS-хостинг для твоих идей"

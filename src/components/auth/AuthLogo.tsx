@@ -12,12 +12,8 @@ export function AuthLogo() {
       <View className="mb-4 h-20 w-20 items-center justify-center rounded-card bg-primary">
         <Text className="text-3xl font-extrabold tracking-tight text-white">IT</Text>
       </View>
-      <Text className="text-3xl font-extrabold text-ink-900 dark:text-slate-50">
-        IT Top
-      </Text>
-      <Text className="mt-1 text-base text-slate-500 dark:text-slate-400">
-        Электронный дневник
-      </Text>
+      <Text className="text-3xl font-extrabold text-title">IT Top</Text>
+      <Text className="mt-1 text-base text-muted">Электронный дневник</Text>
     </Animated.View>
   );
 }

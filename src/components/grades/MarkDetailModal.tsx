@@ -39,30 +39,30 @@ function HomeworkMatch({
 
   return (
     <View className="mt-5">
-      <Text className="mb-2 text-xs uppercase text-slate-500">
+      <Text className="mb-2 text-xs uppercase text-faint">
         Домашнее задание
       </Text>
       {isLoading ? (
-        <View className="flex-row items-center rounded-xl bg-ink-900 p-3">
+        <View className="flex-row items-center rounded-xl bg-canvas p-3">
           <ActivityIndicator size="small" color={colors.primaryLight} />
-          <Text className="ml-3 text-sm text-slate-400">Ищем задание…</Text>
+          <Text className="ml-3 text-sm text-muted">Ищем задание…</Text>
         </View>
       ) : homework ? (
         <Pressable
           onPress={() => onOpenHomework(homework)}
-          className="flex-row items-center rounded-xl bg-ink-900 p-3 active:opacity-70"
+          className="flex-row items-center rounded-xl bg-canvas p-3 active:opacity-70"
         >
           <View className="flex-1 pr-2">
             <Text
-              className="text-sm font-semibold text-slate-50"
+              className="text-sm font-semibold text-title"
               numberOfLines={2}
             >
               {homework.theme}
             </Text>
-            <Text className="mt-1 text-xs text-slate-500" numberOfLines={1}>
+            <Text className="mt-1 text-xs text-faint" numberOfLines={1}>
               {homework.teacher}
             </Text>
-            <Text className="mt-1 text-xs text-slate-400">
+            <Text className="mt-1 text-xs text-muted">
               Дедлайн {formatDate(homework.overdueAt)}
             </Text>
           </View>
@@ -73,7 +73,7 @@ function HomeworkMatch({
           />
         </Pressable>
       ) : (
-        <Text className="text-sm leading-5 text-slate-400">
+        <Text className="text-sm leading-5 text-muted">
           Не удалось сопоставить оценку с конкретным заданием — журнал не
           хранит эту связь.
         </Text>
@@ -104,7 +104,7 @@ export function MarkDetailModal({
         {/* Тап по затемнению — закрыть */}
         <Pressable className="flex-1" onPress={onClose} />
         {detail ? (
-          <View className="rounded-t-3xl bg-ink-800 px-5 pb-8 pt-4">
+          <View className="rounded-t-3xl bg-surface px-5 pb-8 pt-4">
             <View className="flex-row items-center">
               <View
                 className={`h-12 w-12 items-center justify-center rounded-xl ${markBg(
@@ -120,10 +120,10 @@ export function MarkDetailModal({
                 </Text>
               </View>
               <View className="ml-3 flex-1 pr-3">
-                <Text className="text-base font-bold text-slate-50">
+                <Text className="text-base font-bold text-title">
                   {MARK_KIND_LABEL[detail.mark.kind]} работа
                 </Text>
-                <Text className="mt-0.5 text-xs text-slate-400">
+                <Text className="mt-0.5 text-xs text-muted">
                   {detail.subject}
                 </Text>
               </View>
@@ -132,7 +132,7 @@ export function MarkDetailModal({
               </Pressable>
             </View>
 
-            <Text className="mt-3 text-sm text-slate-400">
+            <Text className="mt-3 text-sm text-muted">
               Получена: {dayTitle(detail.mark.date)}
             </Text>
 

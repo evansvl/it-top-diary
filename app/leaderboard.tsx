@@ -25,15 +25,15 @@ const SCOPES: { value: LeaderboardScope; label: string }[] = [
 // Медальные цвета топ-3, дальше — нейтральный номер.
 function positionColor(position: number): string {
   if (position === 1) return 'text-warning';
-  if (position <= 3) return 'text-slate-200';
-  return 'text-slate-500';
+  if (position <= 3) return 'text-body';
+  return 'text-faint';
 }
 
 function LeaderRow({ item, isMe }: { item: LeaderEntry; isMe: boolean }) {
   return (
     <View
       className={`mb-2 flex-row items-center rounded-card p-3 ${
-        isMe ? 'border border-primary bg-primary/10' : 'bg-ink-800'
+        isMe ? 'border border-primary bg-primary/10' : 'bg-surface'
       }`}
     >
       <Text className={`w-8 text-center text-base font-bold ${positionColor(item.position)}`}>
@@ -42,14 +42,14 @@ function LeaderRow({ item, isMe }: { item: LeaderEntry; isMe: boolean }) {
       {item.photo ? (
         <Image
           source={{ uri: item.photo }}
-          className="mx-2 h-9 w-9 rounded-full bg-ink-700"
+          className="mx-2 h-9 w-9 rounded-full bg-elevated"
         />
       ) : (
-        <View className="mx-2 h-9 w-9 rounded-full bg-ink-700" />
+        <View className="mx-2 h-9 w-9 rounded-full bg-elevated" />
       )}
       <Text
         className={`flex-1 pr-2 text-sm ${
-          isMe ? 'font-bold text-slate-50' : 'text-slate-200'
+          isMe ? 'font-bold text-title' : 'text-body'
         }`}
         numberOfLines={1}
       >
@@ -64,8 +64,8 @@ function LeaderRow({ item, isMe }: { item: LeaderEntry; isMe: boolean }) {
 
 function SelfCard({ self }: { self: LeaderSelf }) {
   return (
-    <View className="mb-3 rounded-card bg-ink-800 p-4">
-      <Text className="text-sm text-slate-200">
+    <View className="mb-3 rounded-card bg-surface p-4">
+      <Text className="text-sm text-body">
         Твоё место:{' '}
         <Text className="font-bold text-primary-light">{self.position}</Text>
         {' из '}
@@ -81,7 +81,7 @@ export default function LeaderboardScreen() {
   const myId = useAuthStore((s) => (s.user?.id ? Number(s.user.id) : null));
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <ScreenHeader title="Рейтинг" />
 
       {/* Переключатель группа/поток */}
@@ -93,12 +93,12 @@ export default function LeaderboardScreen() {
               key={s.value}
               onPress={() => setScope(s.value)}
               className={`rounded-full px-4 py-1.5 ${
-                active ? 'bg-primary' : 'bg-ink-800'
+                active ? 'bg-primary' : 'bg-surface'
               }`}
             >
               <Text
                 className={`text-xs font-medium ${
-                  active ? 'text-white' : 'text-slate-300'
+                  active ? 'text-white' : 'text-subtle'
                 }`}
               >
                 {s.label}
@@ -115,9 +115,9 @@ export default function LeaderboardScreen() {
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
             onPress={() => refetch()}
-            className="mt-3 rounded-full bg-ink-800 px-4 py-2 active:opacity-70"
+            className="mt-3 rounded-full bg-surface px-4 py-2 active:opacity-70"
           >
-            <Text className="text-sm text-slate-200">Повторить</Text>
+            <Text className="text-sm text-body">Повторить</Text>
           </Pressable>
         </View>
       ) : (
@@ -131,7 +131,7 @@ export default function LeaderboardScreen() {
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text className="mt-8 text-center text-sm text-slate-400">
+            <Text className="mt-8 text-center text-sm text-muted">
               Рейтинг пуст
             </Text>
           }

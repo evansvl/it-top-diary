@@ -9,26 +9,26 @@ import { formatDate } from '@/lib/date';
 function ExamRow({ item }: { item: ExamRecord }) {
   const standard = isStandardExamMark(item);
   return (
-    <View className="mb-3 flex-row items-center rounded-card bg-ink-800 p-4">
+    <View className="mb-3 flex-row items-center rounded-card bg-surface p-4">
       <View className="flex-1 pr-3">
-        <Text className="text-sm font-semibold text-slate-50" numberOfLines={2}>
+        <Text className="text-sm font-semibold text-title" numberOfLines={2}>
           {item.subject}
         </Text>
-        <Text className="mt-1 text-xs text-slate-400" numberOfLines={1}>
+        <Text className="mt-1 text-xs text-muted" numberOfLines={1}>
           {item.teacher}
         </Text>
-        <Text className="mt-0.5 text-xs text-slate-500">
+        <Text className="mt-0.5 text-xs text-faint">
           {formatDate(item.date)}
         </Text>
       </View>
       <View
         className={`h-10 w-10 items-center justify-center rounded-xl ${
-          standard ? markBg(item.mark ?? 0) : 'bg-ink-700'
+          standard ? markBg(item.mark ?? 0) : 'bg-elevated'
         }`}
       >
         <Text
           className={`text-base font-extrabold ${
-            standard ? markColor(item.mark ?? 0) : 'text-slate-300'
+            standard ? markColor(item.mark ?? 0) : 'text-subtle'
           }`}
         >
           {item.mark != null ? String(item.mark) : '—'}
@@ -42,7 +42,7 @@ export default function ExamsScreen() {
   const { data, isLoading, isError, refetch } = useExams();
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <ScreenHeader title="Экзамены" />
 
       {isLoading ? (
@@ -52,9 +52,9 @@ export default function ExamsScreen() {
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
             onPress={() => refetch()}
-            className="mt-3 rounded-full bg-ink-800 px-4 py-2 active:opacity-70"
+            className="mt-3 rounded-full bg-surface px-4 py-2 active:opacity-70"
           >
-            <Text className="text-sm text-slate-200">Повторить</Text>
+            <Text className="text-sm text-body">Повторить</Text>
           </Pressable>
         </View>
       ) : (
@@ -65,7 +65,7 @@ export default function ExamsScreen() {
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text className="mt-8 text-center text-sm text-slate-400">
+            <Text className="mt-8 text-center text-sm text-muted">
               Экзаменов пока нет
             </Text>
           }

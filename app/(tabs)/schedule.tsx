@@ -41,17 +41,17 @@ function LessonRow({
 }) {
   const visitMeta = visit != null ? VISIT_STATUS_META[visit] : undefined;
   return (
-    <View className="mb-3 flex-row rounded-card bg-ink-800 p-4">
+    <View className="mb-3 flex-row rounded-card bg-surface p-4">
       <View className="w-16">
         <Text className="text-base font-bold text-primary-light">
           {l.startedAt}
         </Text>
-        <Text className="text-xs text-slate-500">{l.finishedAt}</Text>
+        <Text className="text-xs text-faint">{l.finishedAt}</Text>
       </View>
-      <View className="flex-1 border-l border-ink-600 pl-3">
+      <View className="flex-1 border-l border-hairline pl-3">
         <View className="flex-row items-start">
           <Text
-            className="flex-1 pr-2 text-sm font-semibold text-slate-50"
+            className="flex-1 pr-2 text-sm font-semibold text-title"
             numberOfLines={2}
           >
             {l.subject}
@@ -64,10 +64,10 @@ function LessonRow({
             </View>
           ) : null}
         </View>
-        <Text className="mt-1 text-xs text-slate-400" numberOfLines={1}>
+        <Text className="mt-1 text-xs text-muted" numberOfLines={1}>
           {l.teacher}
         </Text>
-        <Text className="mt-0.5 text-xs text-slate-500">Кабинет: {l.room}</Text>
+        <Text className="mt-0.5 text-xs text-faint">Кабинет: {l.room}</Text>
         {marks && marks.length > 0 ? (
           <View className="mt-2 -mb-2 flex-row flex-wrap">
             {marks.map((m, i) => (
@@ -84,13 +84,13 @@ function LessonRow({
 // (или название в журнале не совпало с расписанием).
 function DayMarksCard({ groups }: { groups: DaySubjectMarks[] }) {
   return (
-    <View className="mb-3 rounded-card bg-ink-800 p-4">
-      <Text className="text-sm font-semibold text-slate-50">
+    <View className="mb-3 rounded-card bg-surface p-4">
+      <Text className="text-sm font-semibold text-title">
         Оценки за день
       </Text>
       {groups.map((g) => (
         <View key={g.subject} className="mt-2">
-          <Text className="text-xs text-slate-400" numberOfLines={1}>
+          <Text className="text-xs text-muted" numberOfLines={1}>
             {g.subject}
           </Text>
           <View className="mt-1 -mb-2 flex-row flex-wrap">
@@ -151,9 +151,9 @@ export default function ScheduleTab() {
   }, [grades, day, lessons]);
 
   return (
-    <SafeAreaView className="flex-1 bg-ink-900" edges={['top']}>
+    <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <View className="px-4 py-2">
-        <Text className="text-xl font-bold text-slate-50">Расписание</Text>
+        <Text className="text-xl font-bold text-title">Расписание</Text>
       </View>
 
       {/* Переключатель дней */}
@@ -161,12 +161,12 @@ export default function ScheduleTab() {
         <Pressable
           onPress={() => setDay((d) => shiftDay(d, -1))}
           hitSlop={12}
-          className="h-9 w-9 items-center justify-center rounded-full bg-ink-800 active:opacity-70"
+          className="h-9 w-9 items-center justify-center rounded-full bg-surface active:opacity-70"
         >
-          <Text className="text-xl leading-6 text-slate-200">‹</Text>
+          <Text className="text-xl leading-6 text-body">‹</Text>
         </Pressable>
         <Pressable onPress={() => setDay(todayIso())} hitSlop={8}>
-          <Text className="text-base font-semibold text-slate-100">
+          <Text className="text-base font-semibold text-body">
             {dayTitle(day)}
             {today ? ' · сегодня' : ''}
           </Text>
@@ -174,9 +174,9 @@ export default function ScheduleTab() {
         <Pressable
           onPress={() => setDay((d) => shiftDay(d, 1))}
           hitSlop={12}
-          className="h-9 w-9 items-center justify-center rounded-full bg-ink-800 active:opacity-70"
+          className="h-9 w-9 items-center justify-center rounded-full bg-surface active:opacity-70"
         >
-          <Text className="text-xl leading-6 text-slate-200">›</Text>
+          <Text className="text-xl leading-6 text-body">›</Text>
         </Pressable>
       </View>
 
@@ -187,9 +187,9 @@ export default function ScheduleTab() {
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
             onPress={() => refetch()}
-            className="mt-3 rounded-full bg-ink-800 px-4 py-2 active:opacity-70"
+            className="mt-3 rounded-full bg-surface px-4 py-2 active:opacity-70"
           >
-            <Text className="text-sm text-slate-200">Повторить</Text>
+            <Text className="text-sm text-body">Повторить</Text>
           </Pressable>
         </View>
       ) : (
@@ -209,7 +209,7 @@ export default function ScheduleTab() {
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
           ListEmptyComponent={
-            <Text className="mt-8 text-center text-sm text-slate-400">
+            <Text className="mt-8 text-center text-sm text-muted">
               В этот день занятий нет
             </Text>
           }

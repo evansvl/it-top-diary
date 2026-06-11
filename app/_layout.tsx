@@ -9,34 +9,54 @@ import { useColorScheme } from 'nativewind';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useSettingsStore } from '@/features/settings/settingsStore';
-import { colors } from '@/theme/colors';
+import { useTheme } from '@/theme/useColorScheme';
 
-// Корневой layout: провайдеры, тёмная тема по умолчанию,
-// восстановление сессии и настроек при запуске.
-export default function RootLayout() {
+// Применяет сохранённую тему и рисует навигатор. Тёмная — по умолчанию:
+// выставляем её сразу, а пользовательский выбор — после гидрации настроек
+// (чтобы не моргнуть системной светлой темой на старте).
+function ThemedNavigator() {
   const { setColorScheme } = useColorScheme();
+  const theme = useSettingsStore((s) => s.theme);
+  const settingsHydrated = useSettingsStore((s) => s.hydrated);
+  const { palette, isDark } = useTheme();
+
+  useEffect(() => {
+    setColorScheme('dark');
+  }, [setColorScheme]);
+
+  useEffect(() => {
+    if (settingsHydrated) setColorScheme(theme);
+  }, [settingsHydrated, theme, setColorScheme]);
+
+  return (
+    <>
+      <StatusBar style={isDark ? 'light' : 'dark'} />
+      <Stack
+        screenOptions={{
+          headerShown: false,
+          contentStyle: { backgroundColor: palette.bg },
+          animation: 'slide_from_right',
+        }}
+      />
+    </>
+  );
+}
+
+// Корневой layout: провайдеры, восстановление сессии и настроек при запуске.
+export default function RootLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
   const hydrateSettings = useSettingsStore((s) => s.hydrate);
 
   useEffect(() => {
-    // Тёмная тема по умолчанию (light доступен через настройки профиля)
-    setColorScheme('dark');
     hydrate();
     hydrateSettings();
-  }, [hydrate, hydrateSettings, setColorScheme]);
+  }, [hydrate, hydrateSettings]);
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
       <QueryClientProvider client={queryClient}>
         <SafeAreaProvider>
-          <StatusBar style="light" />
-          <Stack
-            screenOptions={{
-              headerShown: false,
-              contentStyle: { backgroundColor: colors.dark.bg },
-              animation: 'slide_from_right',
-            }}
-          />
+          <ThemedNavigator />
         </SafeAreaProvider>
       </QueryClientProvider>
     </GestureHandlerRootView>

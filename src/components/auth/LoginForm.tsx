@@ -36,7 +36,7 @@ function SwitchRow({
   return (
     <View className="mb-3 flex-row items-center justify-between">
       <Text
-        className={`text-sm ${disabled ? 'text-slate-600' : 'text-slate-300'}`}
+        className={`text-sm ${disabled ? 'text-faint' : 'text-subtle'}`}
       >
         {label}
       </Text>

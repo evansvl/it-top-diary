@@ -12,7 +12,7 @@ export default function Index() {
     return (
       <Animated.View
         entering={FadeIn}
-        className="flex-1 bg-ink-900"
+        className="flex-1 bg-canvas"
       >
         <View className="flex-1" />
       </Animated.View>

@@ -14,9 +14,9 @@ export function UpdateCard() {
   const percent = Math.round(progress * 100);
 
   return (
-    <View className="rounded-card bg-ink-800 px-4 py-4">
+    <View className="rounded-card bg-surface px-4 py-4">
       {status === 'upToDate' ? (
-        <Text className="mb-3 text-sm text-slate-400">
+        <Text className="mb-3 text-sm text-muted">
           У вас последняя версия ({CURRENT_VERSION})
         </Text>
       ) : null}
@@ -27,14 +27,14 @@ export function UpdateCard() {
 
       {info ? (
         <View className="mb-4">
-          <Text className="text-base font-semibold text-slate-50">
+          <Text className="text-base font-semibold text-title">
             Доступна версия {info.version}
-            <Text className="font-normal text-slate-400">
+            <Text className="font-normal text-muted">
               {'  '}· {formatMb(info.sizeBytes)}
             </Text>
           </Text>
           {info.notes ? (
-            <Text className="mt-2 text-sm leading-5 text-slate-400">
+            <Text className="mt-2 text-sm leading-5 text-muted">
               {info.notes}
             </Text>
           ) : null}
@@ -43,13 +43,13 @@ export function UpdateCard() {
 
       {status === 'downloading' ? (
         <View className="mb-2">
-          <View className="h-2 overflow-hidden rounded-full bg-ink-700">
+          <View className="h-2 overflow-hidden rounded-full bg-elevated">
             <View
               className="h-2 rounded-full bg-primary"
               style={{ width: `${percent}%` }}
             />
           </View>
-          <Text className="mt-2 text-center text-xs text-slate-500">
+          <Text className="mt-2 text-center text-xs text-faint">
             Загрузка… {percent}%
           </Text>
         </View>
