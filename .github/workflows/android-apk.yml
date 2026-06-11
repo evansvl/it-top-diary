@@ -1,0 +1,57 @@
+name: Android APK
+
+# Собирает установочный release-APK прямо на бесплатном Ubuntu-раннере
+# (Gradle), без EAS — быстро и без очереди. Release-сборка в шаблоне
+# RN/Expo подписана debug-ключом, поэтому APK самодостаточный (JS вшит,
+# Metro не нужен) и ставится на любое устройство.
+# Запуск вручную: вкладка Actions → этот workflow → Run workflow.
+
+on:
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: 20
+
+      - name: Setup Java (JDK 17)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: 17
+
+      - name: Setup Android SDK
+        uses: android-actions/setup-android@v3
+
+      - name: Install JS deps
+        run: npm ci --legacy-peer-deps
+
+      - name: Expo prebuild (Android native project)
+        run: npx expo prebuild -p android --no-install
+        env:
+          CI: 1
+
+      - name: Build release APK
+        working-directory: android
+        run: ./gradlew assembleRelease --no-daemon
+
+      - name: Rename APK
+        run: |
+          set -eo pipefail
+          APK=$(find android/app/build/outputs/apk/release -name '*.apk' | head -1)
+          cp "$APK" "$RUNNER_TEMP/it-top.apk"
+          ls -lh "$RUNNER_TEMP/it-top.apk"
+
+      - name: Upload APK artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: it-top-apk
+          path: ${{ runner.temp }}/it-top.apk
+          if-no-files-found: error
