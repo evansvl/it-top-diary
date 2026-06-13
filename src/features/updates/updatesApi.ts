@@ -61,15 +61,16 @@ export async function checkForUpdate(
   if (release.draft || release.prerelease) return null;
   if (compareVersions(release.tag_name, currentVersion) <= 0) return null;
 
+  // .apk нужен только Android для прямой установки. На iOS его может не быть —
+  // там обновление лишь анонсируем и ведём на страницу релиза на GitHub.
   const apk = (release.assets ?? []).find((a) =>
     a.name.toLowerCase().endsWith('.apk'),
   );
-  if (!apk) return null;
 
   return {
     version: release.tag_name.replace(/^v/i, ''),
-    apkUrl: apk.browser_download_url,
-    sizeBytes: apk.size,
+    apkUrl: apk?.browser_download_url,
+    sizeBytes: apk?.size,
     notes: (release.body ?? '').trim(),
     pageUrl: release.html_url,
   };

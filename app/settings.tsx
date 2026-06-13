@@ -2,7 +2,6 @@ import { useEffect, useState } from 'react';
 import {
   Alert,
   Linking,
-  Platform,
   Pressable,
   ScrollView,
   Text,
@@ -50,9 +49,8 @@ export default function SettingsScreen() {
     void loadCredentials().then(setCreds);
   }, []);
 
-  // На Android при открытии экрана сразу проверяем обновления.
+  // При открытии экрана сразу проверяем обновления (Android и iOS).
   useEffect(() => {
-    if (Platform.OS !== 'android') return;
     if (useUpdatesStore.getState().status === 'idle') {
       void useUpdatesStore.getState().check();
     }
@@ -134,22 +132,18 @@ export default function SettingsScreen() {
           />
         </View>
 
-        {Platform.OS === 'android' ? (
-          <>
-            <SectionTitle title="Обновления" />
-            <View className="overflow-hidden rounded-card bg-surface">
-              <SettingsRow
-                label="Проверять при запуске"
-                hint="Сообщать о новых версиях на GitHub"
-                switchValue={autoCheckUpdates}
-                onSwitch={(v) => setSetting('autoCheckUpdates', v)}
-              />
-            </View>
-            <View className="mt-3">
-              <UpdateCard />
-            </View>
-          </>
-        ) : null}
+        <SectionTitle title="Обновления" />
+        <View className="overflow-hidden rounded-card bg-surface">
+          <SettingsRow
+            label="Проверять при запуске"
+            hint="Сообщать о новых версиях на GitHub"
+            switchValue={autoCheckUpdates}
+            onSwitch={(v) => setSetting('autoCheckUpdates', v)}
+          />
+        </View>
+        <View className="mt-3">
+          <UpdateCard />
+        </View>
 
         <SectionTitle title="О приложении" />
         <View className="overflow-hidden rounded-card bg-surface">

@@ -62,8 +62,9 @@ export const useUpdatesStore = create<UpdatesState>((set, get) => ({
   downloadAndInstall: async () => {
     const { info, status } = get();
     if (!info || status === 'downloading') return;
-    if (Platform.OS !== 'android') return;
+    if (Platform.OS !== 'android' || !info.apkUrl) return;
 
+    const apkUrl = info.apkUrl;
     const apkPath = `${FileSystem.cacheDirectory}update-${info.version}.apk`;
 
     try {
@@ -71,14 +72,14 @@ export const useUpdatesStore = create<UpdatesState>((set, get) => ({
       if (status !== 'readyToInstall') {
         set({ status: 'downloading', progress: 0, error: null });
         const download = FileSystem.createDownloadResumable(
-          info.apkUrl,
+          apkUrl,
           apkPath,
           {},
           ({ totalBytesWritten, totalBytesExpectedToWrite }) => {
             const total =
               totalBytesExpectedToWrite > 0
                 ? totalBytesExpectedToWrite
-                : info.sizeBytes;
+                : (info.sizeBytes ?? 0);
             if (total > 0) {
               set({ progress: Math.min(totalBytesWritten / total, 1) });
             }

@@ -1,6 +1,8 @@
-import { Text, View } from 'react-native';
+import { Linking, Platform, Text, View } from 'react-native';
 import { Button } from '@/components/ui/Button';
 import { CURRENT_VERSION, useUpdatesStore } from '@/features/updates/updatesStore';
+
+const isAndroid = Platform.OS === 'android';
 
 function formatMb(bytes: number): string {
   return `${(bytes / (1024 * 1024)).toFixed(0)} МБ`;
@@ -29,9 +31,11 @@ export function UpdateCard() {
         <View className="mb-4">
           <Text className="text-base font-semibold text-title">
             Доступна версия {info.version}
-            <Text className="font-normal text-muted">
-              {'  '}· {formatMb(info.sizeBytes)}
-            </Text>
+            {info.sizeBytes ? (
+              <Text className="font-normal text-muted">
+                {'  '}· {formatMb(info.sizeBytes)}
+              </Text>
+            ) : null}
           </Text>
           {info.notes ? (
             <Text className="mt-2 text-sm leading-5 text-muted">
@@ -54,10 +58,17 @@ export function UpdateCard() {
           </Text>
         </View>
       ) : status === 'available' ? (
-        <Button
-          title="Скачать и установить"
-          onPress={() => void downloadAndInstall()}
-        />
+        isAndroid ? (
+          <Button
+            title="Скачать и установить"
+            onPress={() => void downloadAndInstall()}
+          />
+        ) : (
+          <Button
+            title="Открыть на GitHub"
+            onPress={() => info && void Linking.openURL(info.pageUrl)}
+          />
+        )
       ) : status === 'readyToInstall' ? (
         <Button title="Установить" onPress={() => void downloadAndInstall()} />
       ) : (
