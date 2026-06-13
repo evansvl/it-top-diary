@@ -5,15 +5,21 @@ import { SafeAreaProvider } from 'react-native-safe-area-context';
 import { QueryClientProvider } from '@tanstack/react-query';
 import { StatusBar } from 'expo-status-bar';
 import { Stack } from 'expo-router';
+import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'nativewind';
 import { queryClient } from '@/lib/queryClient';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useSettingsStore } from '@/features/settings/settingsStore';
 import { useTheme } from '@/theme/useColorScheme';
 
-// Применяет сохранённую тему и рисует навигатор. Тёмная — по умолчанию:
-// выставляем её сразу, а пользовательский выбор — после гидрации настроек
-// (чтобы не моргнуть системной светлой темой на старте).
+// Держим сплэш, пока не восстановим настройки и не применим тему — иначе
+// светлая тема моргала: приложение стартовало в тёмной и перекрашивалось
+// после асинхронной гидрации. Ошибки игнорируем (сплэш мог уже скрыться).
+void SplashScreen.preventAutoHideAsync();
+
+// Применяет сохранённую тему и рисует навигатор. До гидрации настроек экран
+// скрыт сплэшем, поэтому красим сразу в сохранённый режим без промежуточного
+// тёмного кадра, а сплэш убираем уже после применения темы.
 function ThemedNavigator() {
   const { setColorScheme } = useColorScheme();
   const theme = useSettingsStore((s) => s.theme);
@@ -21,11 +27,9 @@ function ThemedNavigator() {
   const { palette, isDark } = useTheme();
 
   useEffect(() => {
-    setColorScheme('dark');
-  }, [setColorScheme]);
-
-  useEffect(() => {
-    if (settingsHydrated) setColorScheme(theme);
+    if (!settingsHydrated) return;
+    setColorScheme(theme);
+    void SplashScreen.hideAsync();
   }, [settingsHydrated, theme, setColorScheme]);
 
   return (

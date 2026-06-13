@@ -28,8 +28,14 @@ export const useSettingsStore = create<SettingsState>((set, get) => ({
   hydrated: false,
 
   hydrate: async () => {
-    const saved = await loadAppSettings<Partial<AppSettings>>();
-    set({ ...DEFAULTS, ...saved, hydrated: true });
+    // hydrated должен стать true в любом случае — на нём держится сплэш
+    // (app/_layout.tsx), иначе при сбое чтения хранилища он зависнет навсегда.
+    try {
+      const saved = await loadAppSettings<Partial<AppSettings>>();
+      set({ ...DEFAULTS, ...saved, hydrated: true });
+    } catch {
+      set({ ...DEFAULTS, hydrated: true });
+    }
   },
 
   setSetting: (key, value) => {

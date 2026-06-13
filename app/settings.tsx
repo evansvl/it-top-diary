@@ -26,6 +26,7 @@ import { useTheme } from '@/theme/useColorScheme';
 
 const GITHUB_URL = 'https://github.com/evansvl/it-top-diary';
 const AEZA_URL = 'https://aeza.net';
+const VPN_URL = 'https://t.me/nnstorevpnbot';
 
 // Заголовок секции настроек.
 function SectionTitle({ title }: { title: string }) {
@@ -172,6 +173,12 @@ export default function SettingsScreen() {
             label="Нужен сервер для проекта?"
             hint="Aeza — быстрый VPS-хостинг для твоих идей"
             onPress={() => void Linking.openURL(AEZA_URL)}
+            border
+          />
+          <SettingsRow
+            label="YouTube и Telegram не работают?"
+            hint="NN Store VPN — быстрый VPN, открой в Telegram"
+            onPress={() => void Linking.openURL(VPN_URL)}
           />
         </View>
       </ScrollView>
