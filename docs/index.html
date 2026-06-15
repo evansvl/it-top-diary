@@ -29,8 +29,8 @@
   </style>
 </head>
 <body class="min-h-screen bg-black text-white relative overflow-x-hidden">
-  <!-- появление из чёрного (симметрично затемнению на evansvl.me) -->
-  <div id="page-enter" class="fixed inset-0 z-[60] bg-black pointer-events-none" style="opacity:1; transition: opacity .35s ease;"></div>
+  <!-- лёгкая шторка перехода (симметрично evansvl.me): появление + уход -->
+  <div id="page-fade" class="fixed inset-0 z-[60] bg-black pointer-events-none" style="opacity:.55; transition: opacity .17s ease;"></div>
   <!-- сетка -->
   <div class="fixed inset-0 opacity-20 pointer-events-none grid-bg"></div>
   <!-- курсорное свечение -->
@@ -48,7 +48,7 @@
 
       <!-- nav -->
       <nav class="flex flex-wrap gap-2 mb-12">
-        <a href="https://evansvl.me" class="flex items-center gap-2 px-4 py-2 border border-gray-800 bg-black/50 text-gray-400 hover:border-white hover:text-white transition-all duration-150 mono text-sm">← evansvl.me</a>
+        <a href="https://evansvl.me" onclick="return fadeTo('https://evansvl.me')" class="flex items-center gap-2 px-4 py-2 border border-gray-800 bg-black/50 text-gray-400 hover:border-white hover:text-white transition-all duration-150 mono text-sm">← evansvl.me</a>
         <a href="https://github.com/evansvl/it-top-diary" class="flex items-center gap-2 px-4 py-2 border border-gray-800 bg-black/50 text-gray-400 hover:border-white hover:text-white transition-all duration-150 mono text-sm">GitHub</a>
       </nav>
 
@@ -157,11 +157,23 @@
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
-    // плавно убираем чёрную «шторку» появления
+    // появление: убираем стартовое затемнение (симметрично уходу)
     requestAnimationFrame(() => {
-      const pe = document.getElementById('page-enter');
-      if (pe) { pe.style.opacity = '0'; setTimeout(() => pe.remove(), 450); }
+      const pe = document.getElementById('page-fade');
+      if (pe) pe.style.opacity = '0';
     });
+    // при возврате «назад» (bfcache) тоже снимаем затемнение
+    window.addEventListener('pageshow', () => {
+      const pe = document.getElementById('page-fade');
+      if (pe) pe.style.opacity = '0';
+    });
+    // быстрый уход на другой сайт в той же вкладке (симметрично evansvl.me)
+    function fadeTo(url) {
+      const pe = document.getElementById('page-fade');
+      if (pe) pe.style.opacity = '0.55';
+      setTimeout(function () { location.href = url; }, 170);
+      return false;
+    }
 
     // отрисовываем lucide-иконки (data-lucide → SVG)
     if (window.lucide) lucide.createIcons();
