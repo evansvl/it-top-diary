@@ -24,6 +24,7 @@
         linear-gradient(90deg, rgba(255,255,255,0.05) 1px, transparent 1px);
       background-size: 50px 50px;
     }
+    html { scroll-behavior: smooth; }
     body { font-family: ui-sans-serif, system-ui, -apple-system, Segoe UI, Roboto, sans-serif; }
     .mono { font-family: ui-monospace, SFMono-Regular, Menlo, Consolas, monospace; }
   </style>
@@ -92,8 +93,8 @@
         <div class="absolute bottom-0 left-0 w-0 h-0 border-b-2 border-l-2 border-green-500 opacity-0 group-hover:w-4 group-hover:h-4 group-hover:opacity-100 transition-all duration-300"></div>
       </a>
 
-      <!-- download: iOS -->
-      <a id="ios-card" href="https://github.com/evansvl/it-top-diary/releases/latest/download/ittop-unsigned.ipa" target="_blank" rel="noopener noreferrer"
+      <!-- download: iOS → ведём на инструкцию (не прямой .ipa) -->
+      <a id="ios-card" href="#ios-install"
          class="group block border border-gray-800 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm p-6 transition-all duration-300 hover:border-blue-500 hover:from-blue-500/20 hover:to-purple-500/20 relative mb-12">
         <div class="flex items-start gap-4">
           <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center border border-blue-500/30"><img src="https://cdn.simpleicons.org/apple/ffffff" class="w-6 h-6" alt="Apple" /></div>
@@ -102,7 +103,7 @@
               <h3 class="text-xl font-bold text-white">Скачать для iPhone</h3>
               <span id="ios-badge" class="text-xs mono px-2 py-1 bg-blue-500/10 border border-blue-500/30 text-blue-400">.ipa · неподписанный</span>
             </div>
-            <p class="text-gray-300 mb-1">Без джейлбрейка — установка через AltStore / Sideloadly (см. ниже).</p>
+            <p class="text-gray-300 mb-1">Как установить на iPhone — пошаговая инструкция ниже ↓</p>
             <p id="ios-meta" class="text-sm text-gray-500 mono">загрузка информации о версии…</p>
           </div>
         </div>
@@ -135,14 +136,19 @@
               <li>Готово. Обновления приложение предложит само.</li>
             </ol>
           </div>
-          <div class="border border-gray-800 bg-black/50 p-6">
+          <div id="ios-install" class="border border-gray-800 bg-black/50 p-6 scroll-mt-6">
             <h3 class="text-lg font-bold mb-3 flex items-center gap-2"><img src="https://cdn.simpleicons.org/apple/ffffff" class="w-5 h-5" alt="" /> iPhone</h3>
             <ol class="text-gray-400 text-sm space-y-2 list-decimal list-inside">
-              <li>Скачайте <span class="mono">.ipa</span> (он неподписанный).</li>
-              <li>Поставьте <a class="text-blue-400 underline" href="https://altstore.io" target="_blank" rel="noopener">AltStore</a> или <a class="text-blue-400 underline" href="https://sideloadly.io" target="_blank" rel="noopener">Sideloadly</a> на компьютер.</li>
-              <li>Подпишите <span class="mono">.ipa</span> своим Apple ID и установите на iPhone.</li>
-              <li>Бесплатная подпись живёт 7 дней — потом просто переподпишите.</li>
+              <li>Поставьте на компьютер <a class="text-blue-400 underline" href="https://sideloadly.io" target="_blank" rel="noopener">Sideloadly</a> или <a class="text-blue-400 underline" href="https://altstore.io" target="_blank" rel="noopener">AltStore</a>.</li>
+              <li>Подключите iPhone к компьютеру и войдите своим <span class="text-gray-300">Apple ID</span> в программе.</li>
+              <li>Скачайте <a class="text-blue-400 underline mono" href="https://github.com/evansvl/it-top-diary/releases/latest/download/ittop-unsigned.ipa">ittop-unsigned.ipa</a> и перетащите его в Sideloadly / AltStore — он сам подпишет и установит.</li>
+              <li>На iPhone: <span class="text-gray-300">Настройки → Основные → VPN и управление устройством</span> → доверьте своему профилю разработчика.</li>
+              <li>Бесплатная подпись живёт 7 дней — по истечении просто переустановите тем же способом.</li>
             </ol>
+            <a href="https://github.com/evansvl/it-top-diary/releases/latest/download/ittop-unsigned.ipa"
+               class="inline-flex items-center gap-2 mt-4 px-4 py-2 border border-blue-500/40 bg-blue-500/10 text-blue-300 hover:bg-blue-500/20 transition-colors mono text-sm">
+              <i data-lucide="download" class="w-4 h-4"></i> Скачать .ipa
+            </a>
           </div>
         </div>
       </section>
