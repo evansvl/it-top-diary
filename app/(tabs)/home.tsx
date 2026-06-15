@@ -1,3 +1,4 @@
+import { useCallback, useState } from 'react';
 import { Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { useRouter, type Href } from 'expo-router';
@@ -6,6 +7,8 @@ import { useAuthStore } from '@/features/auth/authStore';
 import { HomeworkCard } from '@/components/home/HomeworkCard';
 import { GradesCard } from '@/components/home/GradesCard';
 import { ScheduleCard } from '@/components/home/ScheduleCard';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
+import { queryClient } from '@/lib/queryClient';
 import { colors } from '@/theme/colors';
 
 // Плитки дополнительных разделов (экраны корневого стека).
@@ -34,11 +37,25 @@ export default function HomeTab() {
   const user = useAuthStore((s) => s.user);
   const name = firstName(user?.fullName);
 
+  // Pull-to-refresh: обновляем все активные запросы карточек дашборда.
+  const [refreshing, setRefreshing] = useState(false);
+  const onRefresh = useCallback(async () => {
+    setRefreshing(true);
+    try {
+      await queryClient.refetchQueries({ type: 'active' });
+    } finally {
+      setRefreshing(false);
+    }
+  }, []);
+
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
       <ScrollView
         contentContainerStyle={{ padding: 24 }}
         showsVerticalScrollIndicator={false}
+        refreshControl={
+          <ThemedRefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+        }
       >
         <Text className="text-sm text-muted">Привет,</Text>
         <Text className="mt-1 text-2xl font-bold text-title">

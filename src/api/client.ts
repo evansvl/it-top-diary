@@ -2,8 +2,9 @@ import { API_BASE_URL } from './endpoints';
 
 // ============================================================
 //  HTTP-клиент на fetch. Подставляет Bearer-токен, язык ru,
-//  единообразно парсит ошибки. Логику авто-refresh при 401
-//  добавим, когда подтвердим refresh-эндпоинт.
+//  единообразно парсит ошибки. При 401 один раз пытается тихо
+//  обновить сессию (повторный вход по сохранённым данным —
+//  отдельный refresh-эндпоинт не подтверждён) и повторяет запрос.
 // ============================================================
 
 export class ApiError extends Error {
@@ -23,6 +24,25 @@ export function setAccessTokenProvider(fn: () => string | null): void {
   accessTokenProvider = fn;
 }
 
+// Обновление сессии при 401 (реализовано в authStore, регистрируется там же).
+// Возвращает true, если удалось получить свежий токен.
+let sessionRefresher: (() => Promise<boolean>) | null = null;
+export function setSessionRefresher(fn: () => Promise<boolean>): void {
+  sessionRefresher = fn;
+}
+
+// Один общий промис обновления — параллельные 401 не плодят повторных входов.
+let refreshInFlight: Promise<boolean> | null = null;
+function refreshSession(): Promise<boolean> {
+  if (!sessionRefresher) return Promise.resolve(false);
+  if (!refreshInFlight) {
+    refreshInFlight = sessionRefresher().finally(() => {
+      refreshInFlight = null;
+    });
+  }
+  return refreshInFlight;
+}
+
 type RequestOptions = {
   method?: 'GET' | 'POST' | 'PATCH' | 'PUT' | 'DELETE';
   body?: unknown;
@@ -30,11 +50,13 @@ type RequestOptions = {
   // Доп. заголовки (например, Authorization: Bearer null для логина)
   headers?: Record<string, string>;
   signal?: AbortSignal;
+  // Внутреннее: запрос уже повторён после обновления сессии (не зацикливаемся).
+  retry?: boolean;
 };
 
 export async function apiRequest<T>(
   path: string,
-  { method = 'GET', body, auth = true, headers: extra, signal }: RequestOptions = {},
+  { method = 'GET', body, auth = true, headers: extra, signal, retry = false }: RequestOptions = {},
 ): Promise<T> {
   // FormData (загрузка файлов) — Content-Type не ставим: fetch сам
   // подставит multipart/form-data с boundary.
@@ -70,6 +92,21 @@ export async function apiRequest<T>(
     });
   } catch {
     throw new ApiError(0, 'Нет соединения с сервером');
+  }
+
+  // Access-токен протух → один раз тихо обновляем сессию и повторяем запрос.
+  if (response.status === 401 && auth && !retry) {
+    const refreshed = await refreshSession();
+    if (refreshed) {
+      return apiRequest<T>(path, {
+        method,
+        body,
+        auth,
+        headers: extra,
+        signal,
+        retry: true,
+      });
+    }
   }
 
   const text = await response.text();

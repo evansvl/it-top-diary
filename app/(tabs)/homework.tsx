@@ -1,4 +1,4 @@
-import { useState } from 'react';
+import { useEffect, useState } from 'react';
 import {
   ActivityIndicator,
   Image,
@@ -8,15 +8,50 @@ import {
   Text,
   View,
 } from 'react-native';
+import Animated, {
+  cancelAnimation,
+  useAnimatedStyle,
+  useSharedValue,
+  withRepeat,
+  withTiming,
+} from 'react-native-reanimated';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { HomeworkDetailModal } from '@/components/homework/HomeworkDetailModal';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import { useHomeworkList } from '@/features/homework/useHomeworkList';
 import {
   HOMEWORK_STATUSES,
   type HomeworkItem,
 } from '@/features/homework/types';
+import { markColor } from '@/features/grades/types';
 import { useAuthStore } from '@/features/auth/authStore';
 import { dayTitle, formatDate } from '@/lib/date';
+
+// Оценка за ДЗ: цвет по баллу (низкая/просроченная — красная и мигает).
+function MarkBadge({ mark, overdue }: { mark: number; overdue: boolean }) {
+  const flash = overdue || mark <= 2;
+  const opacity = useSharedValue(1);
+
+  useEffect(() => {
+    if (flash) {
+      opacity.value = withRepeat(withTiming(0.3, { duration: 700 }), -1, true);
+    } else {
+      cancelAnimation(opacity);
+      opacity.value = 1;
+    }
+    return () => cancelAnimation(opacity);
+  }, [flash, opacity]);
+
+  const style = useAnimatedStyle(() => ({ opacity: opacity.value }));
+
+  return (
+    <Animated.View style={style}>
+      <Text className={`text-xs font-semibold ${markColor(mark)}`}>
+        Оценка: {mark}
+      </Text>
+    </Animated.View>
+  );
+}
 
 function HomeworkRow({
   item,
@@ -55,9 +90,7 @@ function HomeworkRow({
             Дедлайн {formatDate(item.overdueAt)}
           </Text>
           {item.mark != null ? (
-            <Text className="text-xs font-semibold text-success">
-              Оценка: {item.mark}
-            </Text>
+            <MarkBadge mark={item.mark} overdue={item.status === 0} />
           ) : meta ? (
             <Text className={`text-xs font-medium ${meta.color}`}>
               {meta.label}
@@ -101,6 +134,7 @@ export default function HomeworkTab() {
     data,
     isLoading,
     isError,
+    isFetching,
     refetch,
     fetchNextPage,
     hasNextPage,
@@ -178,6 +212,12 @@ export default function HomeworkTab() {
           stickySectionHeadersEnabled={false}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isFetching && !isFetchingNextPage}
+              onRefresh={() => void refetch()}
+            />
+          }
           onEndReachedThreshold={0.4}
           onEndReached={() => {
             if (hasNextPage && !isFetchingNextPage) fetchNextPage();

@@ -2,6 +2,7 @@ import { Redirect, Tabs } from 'expo-router';
 import { Ionicons } from '@expo/vector-icons';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useAutoUpdateCheck } from '@/features/updates/useAutoUpdateCheck';
+import { useNotifications } from '@/features/notifications/useNotifications';
 import { colors } from '@/theme/colors';
 import { useTheme } from '@/theme/useColorScheme';
 
@@ -15,6 +16,8 @@ export default function TabsLayout() {
   const { palette } = useTheme();
   // Тихая проверка обновлений после входа (один раз за запуск)
   useAutoUpdateCheck();
+  // Уведомления: интро/разрешение + синхронизация при входе и из фона
+  useNotifications();
   if (status !== 'authenticated') return <Redirect href="/(auth)/login" />;
 
   return (

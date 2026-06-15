@@ -1,4 +1,7 @@
 import '../global.css';
+// Регистрируем фоновую задачу и обработчик уведомлений на самом старте JS
+// (в т.ч. при headless-запуске ОС), иначе фоновые уведомления не сработают.
+import '@/features/notifications/background';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';

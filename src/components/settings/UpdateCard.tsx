@@ -18,7 +18,7 @@ export function UpdateCard() {
   return (
     <View className="rounded-card bg-surface px-4 py-4">
       {status === 'upToDate' ? (
-        <Text className="mb-3 text-sm text-muted">
+        <Text className="mb-3 text-center text-sm text-muted">
           У вас последняя версия ({CURRENT_VERSION})
         </Text>
       ) : null}

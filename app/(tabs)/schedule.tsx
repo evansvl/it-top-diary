@@ -8,6 +8,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { MarkChip } from '@/components/grades/MarkChip';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import {
   marksForDate,
   normalizeSubject,
@@ -48,7 +49,7 @@ function LessonRow({
         </Text>
         <Text className="text-xs text-faint">{l.finishedAt}</Text>
       </View>
-      <View className="flex-1 border-l border-hairline pl-3">
+      <View className="flex-1 pl-3">
         <View className="flex-row items-start">
           <Text
             className="flex-1 pr-2 text-sm font-semibold text-title"
@@ -107,7 +108,7 @@ function DayMarksCard({ groups }: { groups: DaySubjectMarks[] }) {
 // Расписание по дням: ‹ день › с переходом, тап по дате — сегодня.
 export default function ScheduleTab() {
   const [day, setDay] = useState<string>(todayIso());
-  const { data, isLoading, isError, refetch } = useSchedule(
+  const { data, isLoading, isError, isRefetching, refetch } = useSchedule(
     monthAnchorFromIso(day),
   );
   const lessons = useMemo(
@@ -208,6 +209,12 @@ export default function ScheduleTab() {
           }
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => void refetch()}
+            />
+          }
           ListEmptyComponent={
             <Text className="mt-8 text-center text-sm text-muted">
               В этот день занятий нет

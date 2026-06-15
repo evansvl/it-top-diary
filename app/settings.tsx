@@ -24,7 +24,7 @@ import {
 import { useTheme } from '@/theme/useColorScheme';
 
 const GITHUB_URL = 'https://github.com/evansvl/it-top-diary';
-const AEZA_URL = 'https://aeza.net';
+const AEZA_URL = 'https://aeza.net/?ref=613643';
 const VPN_URL = 'https://t.me/nnstorevpnbot';
 
 // Заголовок секции настроек.
@@ -122,6 +122,15 @@ export default function SettingsScreen() {
           />
         </View>
 
+        <SectionTitle title="Уведомления" />
+        <View className="overflow-hidden rounded-card bg-surface">
+          <SettingsRow
+            label="Уведомления"
+            hint="Дедлайны ДЗ, новые оценки, новости и др."
+            onPress={() => router.push('/notifications')}
+          />
+        </View>
+
         <SectionTitle title="Оформление" />
         <View className="overflow-hidden rounded-card bg-surface">
           <SettingsRow
@@ -171,7 +180,7 @@ export default function SettingsScreen() {
           />
           <SettingsRow
             label="YouTube и Telegram не работают?"
-            hint="NN Store VPN — быстрый VPN, открой в Telegram"
+            hint="NNStore VPN — быстрый VPN, открой в Telegram"
             onPress={() => void Linking.openURL(VPN_URL)}
           />
         </View>

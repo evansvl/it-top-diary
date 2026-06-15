@@ -83,7 +83,7 @@ export function ProfileCard() {
       </View>
 
       {user?.level != null || user?.achievements != null || user?.points != null ? (
-        <View className="mt-6 flex-row border-t border-hairline pt-4">
+        <View className="mt-6 flex-row pt-2">
           <Stat label="Уровень" value={user?.level} />
           <Stat label="Достижения" value={user?.achievements} />
           <Stat label="Баллы" value={user?.points} />

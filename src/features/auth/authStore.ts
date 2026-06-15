@@ -2,13 +2,16 @@ import { create } from 'zustand';
 import {
   clearAuthStorage,
   disableAutoLogin,
+  loadCredentials,
   loadTokens,
   loadUser,
   saveTokens,
   saveUser,
 } from '@/lib/secureStore';
-import { setAccessTokenProvider } from '@/api/client';
-import { fetchMe } from './authApi';
+import { setAccessTokenProvider, setSessionRefresher } from '@/api/client';
+import { cancelAllScheduled } from '@/features/notifications/notify';
+import { clearSnapshot } from '@/features/notifications/snapshot';
+import { fetchMe, login } from './authApi';
 import type { AuthTokens, User } from './types';
 
 type AuthStatus = 'idle' | 'hydrating' | 'authenticated' | 'unauthenticated';
@@ -77,9 +80,29 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     await clearAuthStorage();
     // гасим автовход, чтобы не залогиниться сразу обратно (логин/пароль остаются)
     await disableAutoLogin();
+    // чистим состояние уведомлений, чтобы другой аккаунт не получил чужое
+    await clearSnapshot();
+    await cancelAllScheduled();
     set({ status: 'unauthenticated', user: null, tokens: null });
   },
 }));
 
 // HTTP-клиент берёт актуальный access-токен отсюда.
 setAccessTokenProvider(() => useAuthStore.getState().tokens?.accessToken ?? null);
+
+// Тихий повторный вход при 401: если есть сохранённые учётные данные —
+// логинимся заново и подменяем токены (отдельный refresh-эндпоинт не
+// подтверждён, поэтому используем полноценный /auth/login). Без сохранённого
+// пароля молча сдаёмся — 401 уйдёт наверх как обычная ошибка.
+setSessionRefresher(async () => {
+  const creds = await loadCredentials();
+  if (!creds?.login || !creds?.password) return false;
+  try {
+    const { tokens } = await login({ login: creds.login, password: creds.password });
+    await saveTokens(tokens);
+    useAuthStore.setState({ tokens });
+    return true;
+  } catch {
+    return false;
+  }
+});

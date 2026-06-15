@@ -7,6 +7,7 @@ import {
   type MarkDetail,
 } from '@/components/grades/MarkDetailModal';
 import { HomeworkDetailModal } from '@/components/homework/HomeworkDetailModal';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import type { HomeworkItem } from '@/features/homework/types';
 import { useGrades } from '@/features/grades/useGrades';
 import {
@@ -135,7 +136,7 @@ function AttendanceCard({
 }
 
 export default function GradesTab() {
-  const { data, isLoading, isError, refetch } = useGrades();
+  const { data, isLoading, isError, isRefetching, refetch } = useGrades();
   const [selectedMark, setSelectedMark] = useState<MarkDetail | null>(null);
   const [selectedHomework, setSelectedHomework] =
     useState<HomeworkItem | null>(null);
@@ -187,6 +188,12 @@ export default function GradesTab() {
           }
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => void refetch()}
+            />
+          }
           ListEmptyComponent={
             <Text className="mt-8 text-center text-sm text-muted">
               Оценок пока нет
