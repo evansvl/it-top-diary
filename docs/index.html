@@ -29,6 +29,8 @@
   </style>
 </head>
 <body class="min-h-screen bg-black text-white relative overflow-x-hidden">
+  <!-- появление из чёрного (симметрично затемнению на evansvl.me) -->
+  <div id="page-enter" class="fixed inset-0 z-[60] bg-black pointer-events-none" style="opacity:1; transition: opacity .35s ease;"></div>
   <!-- сетка -->
   <div class="fixed inset-0 opacity-20 pointer-events-none grid-bg"></div>
   <!-- курсорное свечение -->
@@ -155,6 +157,12 @@
 
   <script src="https://unpkg.com/lucide@latest"></script>
   <script>
+    // плавно убираем чёрную «шторку» появления
+    requestAnimationFrame(() => {
+      const pe = document.getElementById('page-enter');
+      if (pe) { pe.style.opacity = '0'; setTimeout(() => pe.remove(), 450); }
+    });
+
     // отрисовываем lucide-иконки (data-lucide → SVG)
     if (window.lucide) lucide.createIcons();
 
