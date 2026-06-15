@@ -6,7 +6,9 @@
 Расписание, оценки, домашние задания, экзамены, оплата и рейтинг —
 быстро, удобно и без браузера.
 
-[![Скачать](https://img.shields.io/badge/Скачать-Releases-1E6FD9?style=for-the-badge&logo=github&logoColor=white)](https://github.com/evansvl/it-top-diary/releases/latest)
+[![Сайт](https://img.shields.io/badge/Сайт-diary.evansvl.me-1E6FD9?style=for-the-badge&logo=googlechrome&logoColor=white)](https://diary.evansvl.me)
+&nbsp;
+[![Скачать](https://img.shields.io/badge/Скачать-Releases-111A2B?style=for-the-badge&logo=github&logoColor=white)](https://github.com/evansvl/it-top-diary/releases/latest)
 &nbsp;
 ![Android](https://img.shields.io/badge/Android-APK-success?style=for-the-badge&logo=android&logoColor=white)
 &nbsp;
