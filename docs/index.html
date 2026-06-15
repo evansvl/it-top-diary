@@ -73,7 +73,7 @@
       </header>
 
       <!-- download: Android -->
-      <a id="android-card" href="https://github.com/evansvl/it-top-diary/releases/latest" target="_blank" rel="noopener noreferrer"
+      <a id="android-card" href="https://github.com/evansvl/it-top-diary/releases/latest/download/it-top.apk" target="_blank" rel="noopener noreferrer"
          class="group block border border-gray-800 bg-gradient-to-br from-green-500/10 to-blue-500/10 backdrop-blur-sm p-6 transition-all duration-300 hover:border-green-500 hover:from-green-500/20 hover:to-blue-500/20 relative mb-4">
         <div class="flex items-start gap-4">
           <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-green-500/20 flex items-center justify-center border border-green-500/30"><img src="https://cdn.simpleicons.org/android/4ade80" class="w-6 h-6" alt="Android" /></div>
@@ -91,7 +91,7 @@
       </a>
 
       <!-- download: iOS -->
-      <a id="ios-card" href="https://github.com/evansvl/it-top-diary/releases/latest" target="_blank" rel="noopener noreferrer"
+      <a id="ios-card" href="https://github.com/evansvl/it-top-diary/releases/latest/download/ittop-unsigned.ipa" target="_blank" rel="noopener noreferrer"
          class="group block border border-gray-800 bg-gradient-to-br from-blue-500/10 to-purple-500/10 backdrop-blur-sm p-6 transition-all duration-300 hover:border-blue-500 hover:from-blue-500/20 hover:to-purple-500/20 relative mb-12">
         <div class="flex items-start gap-4">
           <div class="flex-shrink-0 w-12 h-12 rounded-lg bg-blue-500/20 flex items-center justify-center border border-blue-500/30"><img src="https://cdn.simpleicons.org/apple/ffffff" class="w-6 h-6" alt="Apple" /></div>
@@ -170,7 +170,9 @@
       });
     });
 
-    // подтягиваем последний релиз: ставим ссылки на .apk / .ipa и версию
+    // Кнопки уже ведут на постоянные «latest»-ссылки GitHub
+    // (/releases/latest/download/<файл>) — всегда отдают свежую версию без JS.
+    // Здесь лишь подтягиваем номер версии/размер для подписи под кнопкой.
     (async () => {
       try {
         const res = await fetch('https://api.github.com/repos/evansvl/it-top-diary/releases/latest');
@@ -182,26 +184,22 @@
         const apk = assets.find(a => a.name.toLowerCase().endsWith('.apk'));
         const ipa = assets.find(a => a.name.toLowerCase().endsWith('.ipa') || a.name.toLowerCase().endsWith('.zip'));
 
-        const aCard = document.getElementById('android-card');
         const aMeta = document.getElementById('android-meta');
         if (apk) {
-          aCard.href = apk.browser_download_url;
           aMeta.textContent = `${ver} · ${fmtSize(apk.size)} · ${apk.download_count || 0} загрузок`;
           document.getElementById('android-badge').textContent = apk.name;
         } else {
-          aMeta.textContent = `${ver || 'релиз'} — открыть страницу релизов`;
+          aMeta.textContent = ver || 'последняя версия';
         }
 
-        const iCard = document.getElementById('ios-card');
         const iMeta = document.getElementById('ios-meta');
         if (ipa) {
-          iCard.href = ipa.browser_download_url;
           iMeta.textContent = `${ver} · ${fmtSize(ipa.size)}`;
           document.getElementById('ios-badge').textContent = ipa.name + ' · неподписанный';
         } else {
-          iMeta.textContent = `${ver || 'релиз'} — открыть страницу релизов`;
+          iMeta.textContent = ver || 'последняя версия';
         }
-      } catch (_) { /* офлайн — оставляем ссылки на releases/latest */ }
+      } catch (_) { /* офлайн — кнопки всё равно ведут на latest */ }
     })();
   </script>
 </body>
