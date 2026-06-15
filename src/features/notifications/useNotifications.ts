@@ -33,9 +33,13 @@ export async function enableNotificationsFlow(): Promise<boolean> {
 // Интро при первом запуске ИЛИ после обновления приложения (по смене версии).
 async function runIntro(): Promise<void> {
   const { notifIntroVersion, setSetting, setNotif } = useSettingsStore.getState();
-  if (notifIntroVersion === CURRENT_VERSION) return; // уже показывали на этой версии
+  // Показываем интро/новость об уведомлениях ОДИН РАЗ за всё время: при первой
+  // установке или первом запуске после обновления со старой версии (где поля
+  // ещё не было → null). После показа больше не беспокоим — даже на новых
+  // обновлениях.
+  if (notifIntroVersion !== null) return;
 
-  setSetting('notifIntroVersion', CURRENT_VERSION); // показываем один раз
+  setSetting('notifIntroVersion', CURRENT_VERSION);
 
   const alreadyGranted = await hasPermission();
 
