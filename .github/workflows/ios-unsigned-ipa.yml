@@ -16,14 +16,14 @@ jobs:
       - name: Checkout
         uses: actions/checkout@v4
 
-      - name: Select newest Xcode
-        # Некоторые SwiftPM-зависимости требуют Swift tools 6.2 (Xcode 26),
-        # поэтому берём самый новый установленный Xcode, а не 16.x.
+      - name: Select Xcode 26.2
+        # expo-modules-jsi требует Swift tools 6.2, но Swift 6.2.4 из Xcode 26.3
+        # падает на корректном Double-выражении. Закрепляем рабочую 26.2 вместо
+        # автоматического выбора самой новой версии на меняющемся runner.
         run: |
-          echo "Available Xcodes:"; ls /Applications | grep -E '^Xcode'
-          LATEST=$(ls /Applications | grep -E '^Xcode_[0-9]' | sort -V | tail -1)
-          echo "Using $LATEST"
-          sudo xcode-select -s "/Applications/$LATEST/Contents/Developer"
+          XCODE="/Applications/Xcode_26.2.0.app"
+          test -d "$XCODE"
+          sudo xcode-select -s "$XCODE/Contents/Developer"
           xcodebuild -version
           swift --version
 
