@@ -31,7 +31,7 @@ npx expo-doctor         # config/deps health check (keep at 21/21 before buildin
 npx expo install <pkg>  # add native deps SDK-compatibly (package.json pins many to "*"); --fix to realign
 ```
 
-`.npmrc` sets `legacy-peer-deps=true` — required (react/react-dom skew under SDK 56 otherwise ERESOLVE-fails).
+`.npmrc` sets `legacy-peer-deps=true` — required (react/react-dom skew otherwise ERESOLVE-fails).
 
 ### Building the APK (EAS cloud)
 
@@ -152,6 +152,12 @@ DevTools; map exact field names, don't guess.
   seconds. (Storing durations as absolute caused instant logout on relaunch.)
 - **Error bodies** vary: `{message}`, `{error}`, or array `[{field, message}]` (validation, bad
   login → 422). `extractErrorMessage` in `client.ts` handles all three.
+- List endpoints may return `null` instead of `[]` when a student has no data (for example,
+  before the academic year starts). Pass their payload through `listOrEmpty` from
+  `src/api/response.ts`; unexpected non-array objects deliberately remain errors.
+- Background tasks run without mounting React layouts. `runNotificationsSync()` must hydrate
+  `settingsStore` itself before reading notification preferences; otherwise its default
+  `enabled:false` silently disables every headless sync.
 - **`/settings/user-info`** (GET): `full_name`, `photo` (full public `fs.top-academy.ru` URL,
   loads without auth), `group_name`, `current_group_id` (**required** for homework queries),
   `stream_name`, `level`, `achieves_count`, `gaming_points[]`.

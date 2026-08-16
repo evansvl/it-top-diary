@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type {
   PaymentHistoryItem,
   PaymentNext,
@@ -31,8 +32,8 @@ type RawHistoryItem = {
   description: string;
 };
 
-function toNext(raw: RawPaymentIndex): PaymentNext | null {
-  const p = raw.payment;
+function toNext(raw: RawPaymentIndex | null): PaymentNext | null {
+  const p = raw?.payment;
   if (!p) return null;
   return {
     amount: p.amount_next,
@@ -46,19 +47,20 @@ function toNext(raw: RawPaymentIndex): PaymentNext | null {
 // Три запроса параллельно: следующий платёж, график, история.
 export async function fetchPayments(): Promise<PaymentsData> {
   const [index, schedule, history] = await Promise.all([
-    apiRequest<RawPaymentIndex>(endpoints.payment.index),
-    apiRequest<RawScheduleItem[]>(endpoints.payment.schedule),
-    apiRequest<RawHistoryItem[]>(endpoints.payment.history),
+    apiRequest<RawPaymentIndex | null>(endpoints.payment.index),
+    apiRequest<unknown>(endpoints.payment.schedule),
+    apiRequest<unknown>(endpoints.payment.history),
   ]);
 
-  const scheduleItems: PaymentScheduleItem[] = schedule.map((r) => ({
-    id: r.id,
-    description: r.description,
-    price: r.price,
-    date: r.payment_date,
-    status: r.status,
-  }));
-  const historyItems: PaymentHistoryItem[] = history
+  const scheduleItems: PaymentScheduleItem[] =
+    listOrEmpty<RawScheduleItem>(schedule).map((r) => ({
+      id: r.id,
+      description: r.description,
+      price: r.price,
+      date: r.payment_date,
+      status: r.status,
+    }));
+  const historyItems: PaymentHistoryItem[] = listOrEmpty<RawHistoryItem>(history)
     .map((r) => ({ date: r.date, amount: r.amount, description: r.description }))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 

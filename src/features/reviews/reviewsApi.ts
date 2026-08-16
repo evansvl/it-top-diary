@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type { TeacherReview } from './types';
 
 type RawReview = {
@@ -12,8 +13,8 @@ type RawReview = {
 
 // Отзывы, новые сверху (API отдаёт старые первыми).
 export async function fetchReviews(): Promise<TeacherReview[]> {
-  const raw = await apiRequest<RawReview[]>(endpoints.reviews.list);
-  return raw
+  const payload = await apiRequest<unknown>(endpoints.reviews.list);
+  return listOrEmpty<RawReview>(payload)
     .map((r) => ({
       date: r.date,
       message: r.message,

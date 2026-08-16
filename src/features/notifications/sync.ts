@@ -8,6 +8,7 @@ import type { HomeworkItem } from '@/features/homework/types';
 import { fetchLatestNews } from '@/features/news/newsApi';
 import { fetchReviews } from '@/features/reviews/reviewsApi';
 import { fetchExams } from '@/features/exams/examsApi';
+import { isStandardExamMark } from '@/features/exams/types';
 import { fetchPayments } from '@/features/payments/paymentsApi';
 import type { PaymentsData } from '@/features/payments/types';
 import { cancelAllScheduled, hasPermission, notifyAt, notifyNow } from './notify';
@@ -107,6 +108,14 @@ async function schedulePayments(data: PaymentsData): Promise<void> {
 // Основная синхронизация. Возвращает, удалось ли что-то сделать (для фона).
 export async function runNotificationsSync(): Promise<boolean> {
   if (syncing) return false;
+
+  // При headless-запуске фоновой задачи React-layout не монтируется, поэтому
+  // обычный hydrate() из app/_layout.tsx не выполняется. Без этой гидрации
+  // Zustand оставался с enabled:false по умолчанию и фоновая проверка всегда
+  // завершалась до запросов к API.
+  if (!useSettingsStore.getState().hydrated) {
+    await useSettingsStore.getState().hydrate();
+  }
   const prefs = useSettingsStore.getState().notifications;
   if (!prefs.enabled) return false;
   if (!(await hasPermission())) return false;
@@ -249,7 +258,7 @@ export async function runNotificationsSync(): Promise<boolean> {
         if (!first) {
           const newOnes = exams.filter((e) => !snap.examKeys.includes(key(e)));
           for (const e of newOnes.slice(0, 5)) {
-            const tail = e.mark != null ? `оценка ${e.mark}` : 'назначен';
+            const tail = isStandardExamMark(e) ? `оценка ${e.mark}` : 'назначен';
             await notifyNow('🎓 Экзамен', `${e.subject}: ${tail}`, { kind: 'exams', id: e.id });
           }
         }

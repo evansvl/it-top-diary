@@ -1,6 +1,7 @@
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import { useExams } from '@/features/exams/useExams';
 import { isStandardExamMark, type ExamRecord } from '@/features/exams/types';
 import { markBg, markColor } from '@/features/grades/types';
@@ -41,7 +42,7 @@ function ExamRow({ item }: { item: ExamRecord }) {
 }
 
 export default function ExamsScreen() {
-  const { data, isLoading, isError, refetch } = useExams();
+  const { data, isLoading, isError, isRefetching, refetch } = useExams();
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
@@ -66,10 +67,21 @@ export default function ExamsScreen() {
           renderItem={({ item }) => <ExamRow item={item} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}
           showsVerticalScrollIndicator={false}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => refetch()}
+            />
+          }
           ListEmptyComponent={
-            <Text className="mt-8 text-center text-sm text-muted">
-              Экзаменов пока нет
-            </Text>
+            <View className="mt-8 items-center px-4">
+              <Text className="text-center text-sm font-medium text-body">
+                Экзаменов пока нет
+              </Text>
+              <Text className="mt-1 text-center text-xs text-muted">
+                Они появятся здесь после назначения
+              </Text>
+            </View>
           }
         />
       )}

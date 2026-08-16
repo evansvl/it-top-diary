@@ -17,30 +17,45 @@ TaskManager.defineTask(NOTIF_TASK, async () => {
   }
 });
 
-let registered = false;
+let registrationInFlight: Promise<void> | null = null;
 
 export async function registerBackgroundSync(): Promise<void> {
-  if (registered) return;
-  registered = true;
-  try {
+  if (registrationInFlight) return registrationInFlight;
+
+  registrationInFlight = (async () => {
     const status = await BackgroundTask.getStatusAsync();
     if (status === BackgroundTask.BackgroundTaskStatus.Restricted) return;
-    const isRegistered = await TaskManager.isTaskRegisteredAsync(NOTIF_TASK);
-    if (!isRegistered) {
-      // minimumInterval в минутах; ОС всё равно решает реальный интервал.
-      await BackgroundTask.registerTaskAsync(NOTIF_TASK, { minimumInterval: 60 });
-    }
+
+    // Повторная регистрация обновляет параметры уже сохранённой задачи. 15 минут
+    // — минимально допустимый интервал Android; реальный момент всё равно решает ОС.
+    await BackgroundTask.registerTaskAsync(NOTIF_TASK, { minimumInterval: 15 });
+  })();
+
+  try {
+    await registrationInFlight;
   } catch {
-    registered = false; // дадим шанс повторить позже
+    // Регистрация может быть временно недоступна; foreground-синхронизация
+    // продолжит работать, а следующий вызов повторит попытку.
+  } finally {
+    // Не запираем регистрацию навсегда при Restricted/ошибке: следующий вызов
+    // сможет повторить попытку после смены системных условий.
+    registrationInFlight = null;
   }
 }
 
 export async function unregisterBackgroundSync(): Promise<void> {
+  if (registrationInFlight) {
+    try {
+      await registrationInFlight;
+    } catch {
+      /* регистрация уже не удалась — всё равно проверим нативное состояние */
+    }
+  }
   try {
     const isRegistered = await TaskManager.isTaskRegisteredAsync(NOTIF_TASK);
     if (isRegistered) await BackgroundTask.unregisterTaskAsync(NOTIF_TASK);
   } catch {
     /* ignore */
   }
-  registered = false;
+  registrationInFlight = null;
 }

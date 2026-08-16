@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type { NewsDetail, NewsItem } from './types';
 
 type RawNewsItem = {
@@ -19,8 +20,8 @@ type RawNewsDetail = {
 
 // Список новостей (новые сверху — порядок API сохраняем).
 export async function fetchLatestNews(): Promise<NewsItem[]> {
-  const raw = await apiRequest<RawNewsItem[]>(endpoints.news.latest);
-  return raw.map((r) => ({
+  const payload = await apiRequest<unknown>(endpoints.news.latest);
+  return listOrEmpty<RawNewsItem>(payload).map((r) => ({
     id: r.id_bbs,
     theme: r.theme,
     time: r.time,
