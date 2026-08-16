@@ -17,8 +17,7 @@ jobs:
         uses: actions/checkout@v4
 
       - name: Select Xcode 26.2
-        # expo-modules-jsi требует Swift tools 6.2, но Swift 6.2.4 из Xcode 26.3
-        # падает на корректном Double-выражении. Закрепляем рабочую 26.2 вместо
+        # expo-modules-jsi требует Swift tools 6.2. Закрепляем toolchain вместо
         # автоматического выбора самой новой версии на меняющемся runner.
         run: |
           XCODE="/Applications/Xcode_26.2.0.app"
@@ -34,6 +33,16 @@ jobs:
 
       - name: Install JS deps
         run: npm ci --legacy-peer-deps
+
+      - name: Patch ExpoModulesJSI for Swift 6.2
+        # В expo-modules-jsi 57.0.4 глобальный abs() неоднозначен для Swift 6.2.
+        # Проверки до/после делают временный патч явным и fail-fast, если
+        # upstream изменит строку или выпустит исправление.
+        run: |
+          FILE="node_modules/expo-modules-jsi/apple/Sources/ExpoModulesJSI/Coding/JavaScriptCodable+Date.swift"
+          grep -F 'abs(milliseconds) <= maxJavaScriptDateMilliseconds' "$FILE"
+          sed -i '' 's/abs(milliseconds) <=/Swift.abs(milliseconds) <=/' "$FILE"
+          grep -F 'Swift.abs(milliseconds) <= maxJavaScriptDateMilliseconds' "$FILE"
 
       - name: Expo prebuild (iOS native project)
         run: npx expo prebuild -p ios --no-install
