@@ -11,6 +11,7 @@ import {
 import { setAccessTokenProvider, setSessionRefresher } from '@/api/client';
 import { cancelAllScheduled } from '@/features/notifications/notify';
 import { clearSnapshot } from '@/features/notifications/snapshot';
+import { clearOfflineCache } from '@/lib/queryClient';
 import { fetchMe, login } from './authApi';
 import type { AuthTokens, User } from './types';
 
@@ -62,6 +63,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
   },
 
   setSession: async (user, tokens) => {
+    await clearOfflineCache();
     await saveTokens(tokens);
     await saveUser(user);
     set({ user, tokens, status: 'authenticated' });
@@ -83,6 +85,7 @@ export const useAuthStore = create<AuthState>((set, get) => ({
     // чистим состояние уведомлений, чтобы другой аккаунт не получил чужое
     await clearSnapshot();
     await cancelAllScheduled();
+    await clearOfflineCache();
     set({ status: 'unauthenticated', user: null, tokens: null });
   },
 }));

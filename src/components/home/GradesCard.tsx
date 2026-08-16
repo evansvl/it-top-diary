@@ -3,7 +3,7 @@ import { useGrades } from '@/features/grades/useGrades';
 
 // Сводка по оценкам: средний балл + посещаемость. Открывает экран /grades.
 export function GradesCard() {
-  const { data, isLoading, isError } = useGrades();
+  const { data, isLoading } = useGrades();
   const avg = data?.overallAverage;
   const att = data?.attendanceRate;
 
@@ -16,7 +16,7 @@ export function GradesCard() {
 
       {isLoading ? (
         <ActivityIndicator className="my-5" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <Text className="mt-3 text-sm text-danger">Не удалось загрузить</Text>
       ) : (
         <View className="mt-4 flex-row">

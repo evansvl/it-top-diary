@@ -26,8 +26,10 @@ $env:Path = "C:\Program Files\nodejs;" + $env:Path   # then: node / npm / npx
 
 ```bash
 npx expo start          # dev server (needs a dev build, NOT Expo Go — reanimated/gesture-handler)
-npm run typecheck       # tsc --noEmit — the ONLY check in the project (no tests, no linter). Run before committing.
+npm run typecheck       # tsc --noEmit
+npm test                # Vitest unit suite (use npm run test:watch while developing)
 npx expo-doctor         # config/deps health check (keep at 21/21 before building)
+npx expo export --platform android  # production JS bundle smoke test
 npx expo install <pkg>  # add native deps SDK-compatibly (package.json pins many to "*"); --fix to realign
 ```
 
@@ -54,8 +56,8 @@ APK and attach it to a GitHub Release (the README links to `releases/latest`).
 ## Architecture
 
 **Routing** — file-based `expo-router` (typed routes). Three areas under the root `Stack`
-(`app/_layout.tsx` mounts providers GestureHandler → ReactQuery → SafeArea, forces dark theme,
-calls `authStore.hydrate()` once):
+(`app/_layout.tsx` mounts providers GestureHandler → persisted ReactQuery → SafeArea, restores
+the theme/query cache, wires network + AppState events, and calls `authStore.hydrate()` once):
 - `app/index.tsx` — `/` gate: neutral screen while `status` is `idle`/`hydrating`, then
   `<Redirect>` to `/home` or `/(auth)/login`.
 - `app/(auth)/login.tsx` — has a **mirror redirect** to `/home` when authenticated (that's how a
@@ -93,7 +95,20 @@ LoginForm (RHF+zod) → useLogin (mutation) → authApi.login() → authStore.se
   `disableAutoLogin()`** (keeps login/password prefilled but won't auto-resubmit, so you can
   actually stay logged out); "Забыть сохранённый пароль" in profile fully `clearCredentials()`.
 - `src/api/client.ts` — `fetch` wrapper. Throws `ApiError(status, message, payload)` (`status:0`
-  = no connection). Auto-refresh on 401 is **not implemented** (refresh endpoint unconfirmed).
+  = no connection). On 401 it performs one guarded re-login with saved credentials because a
+  dedicated refresh endpoint is unconfirmed, then retries the original request once.
+
+**Offline query cache**
+- `src/lib/queryClient.ts` persists successful React Query results to AsyncStorage for seven
+  days. Pending/error results are never written; `meta: {persist: false}` opts a query out. If
+  storage fills up, the persister evicts the oldest queries and retries the write.
+- `src/lib/useQueryLifecycle.ts` connects NetInfo/AppState to React Query so stale data refreshes
+  after reconnecting or returning to the foreground. Screens keep rendering cached data when a
+  background refetch fails; `OfflineBanner` makes that state visible.
+- `clearOfflineCache()` must be used for logout, a newly authenticated session, and manual cache
+  clearing. Cached grades/homework are account data and must never carry over to another user.
+- `.github/workflows/checks.yml` runs `npm run typecheck` and `npm test` on pull requests and
+  pushes to `main`. Add pure regression tests under `tests/` for parsers and data policies.
 
 **Settings + self-update (GitHub Releases)**
 - `app/settings.tsx` — root-stack screen opened from the profile tab (auto-login toggle, forget

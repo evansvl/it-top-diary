@@ -50,7 +50,7 @@ function HomeworkMatch({
           <ActivityIndicator size="small" color={colors.primaryLight} />
           <Text className="ml-3 text-sm text-muted">Ищем задание…</Text>
         </View>
-      ) : isError ? (
+      ) : isError && !data ? (
         <Pressable
           onPress={() => void refetch()}
           className="flex-row items-center rounded-xl bg-canvas p-3 active:opacity-70"

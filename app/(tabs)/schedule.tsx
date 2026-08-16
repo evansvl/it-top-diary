@@ -108,7 +108,7 @@ function DayMarksCard({ groups }: { groups: DaySubjectMarks[] }) {
 // Расписание по дням: ‹ день › с переходом, тап по дате — сегодня.
 export default function ScheduleTab() {
   const [day, setDay] = useState<string>(todayIso());
-  const { data, isLoading, isError, isRefetching, refetch } = useSchedule(
+  const { data, isLoading, isRefetching, refetch } = useSchedule(
     monthAnchorFromIso(day),
   );
   const lessons = useMemo(
@@ -183,7 +183,7 @@ export default function ScheduleTab() {
 
       {isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
