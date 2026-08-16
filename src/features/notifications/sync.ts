@@ -108,24 +108,24 @@ async function schedulePayments(data: PaymentsData): Promise<void> {
 // Основная синхронизация. Возвращает, удалось ли что-то сделать (для фона).
 export async function runNotificationsSync(): Promise<boolean> {
   if (syncing) return false;
-
-  // При headless-запуске фоновой задачи React-layout не монтируется, поэтому
-  // обычный hydrate() из app/_layout.tsx не выполняется. Без этой гидрации
-  // Zustand оставался с enabled:false по умолчанию и фоновая проверка всегда
-  // завершалась до запросов к API.
-  if (!useSettingsStore.getState().hydrated) {
-    await useSettingsStore.getState().hydrate();
-  }
-  const prefs = useSettingsStore.getState().notifications;
-  if (!prefs.enabled) return false;
-  if (!(await hasPermission())) return false;
-
-  const session = await ensureSession();
-  if (!session) return false;
-  const { groupId } = session;
-
   syncing = true;
+
   try {
+    // При headless-запуске фоновой задачи React-layout не монтируется, поэтому
+    // обычный hydrate() из app/_layout.tsx не выполняется. Без этой гидрации
+    // Zustand оставался с enabled:false по умолчанию и фоновая проверка всегда
+    // завершалась до запросов к API.
+    if (!useSettingsStore.getState().hydrated) {
+      await useSettingsStore.getState().hydrate();
+    }
+    const prefs = useSettingsStore.getState().notifications;
+    if (!prefs.enabled) return false;
+    if (!(await hasPermission())) return false;
+
+    const session = await ensureSession();
+    if (!session) return false;
+    const { groupId } = session;
+
     // Чистим прежние отложенные (дедлайны/оплату) — ниже планируем заново.
     // Под локом syncing, чтобы параллельный вызов не стёр их без переплана.
     try {

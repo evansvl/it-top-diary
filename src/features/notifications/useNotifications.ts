@@ -1,5 +1,7 @@
 import { useEffect } from 'react';
 import { Alert, AppState, Linking } from 'react-native';
+import { router, type Href } from 'expo-router';
+import * as Notifications from 'expo-notifications';
 import { CURRENT_VERSION } from '@/features/updates/updatesStore';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useSettingsStore } from '@/features/settings/settingsStore';
@@ -9,6 +11,39 @@ import { registerBackgroundSync } from './background';
 
 // Один раз за запуск — чтобы не показывать интро/синк по каждому ремаунту.
 let introHandled = false;
+let handledResponseId: string | null = null;
+
+function notificationRoute(data: Record<string, unknown>): Href | null {
+  switch (data.kind) {
+    case 'grades':
+      return '/grades';
+    case 'homeworkNew':
+    case 'homeworkChecked':
+    case 'deadline':
+      return '/homework';
+    case 'exams':
+      return '/exams';
+    case 'news':
+      return '/news';
+    case 'reviews':
+      return '/reviews';
+    case 'payment':
+      return '/payments';
+    default:
+      return null;
+  }
+}
+
+function openNotification(response: Notifications.NotificationResponse): void {
+  const responseId = response.notification.request.identifier;
+  if (responseId === handledResponseId) return;
+  handledResponseId = responseId;
+
+  const target = notificationRoute(
+    response.notification.request.content.data ?? {},
+  );
+  if (target) router.push(target);
+}
 
 // Запрос разрешения после выдачи (используется и интро, и экраном настроек).
 export async function enableNotificationsFlow(): Promise<boolean> {
@@ -105,5 +140,22 @@ export function useNotifications(): void {
       if (s === 'active') maybeSync();
     });
     return () => sub.remove();
+  }, [hydrated, status]);
+
+  // Нажатие на уведомление ведёт сразу к связанному разделу. Обрабатываем и
+  // живой тап, и cold start, когда приложение было полностью закрыто.
+  useEffect(() => {
+    if (!hydrated || status !== 'authenticated') return;
+
+    const subscription = Notifications.addNotificationResponseReceivedListener(
+      openNotification,
+    );
+    void Notifications.getLastNotificationResponseAsync().then((response) => {
+      if (!response) return;
+      openNotification(response);
+      return Notifications.clearLastNotificationResponseAsync();
+    });
+
+    return () => subscription.remove();
   }, [hydrated, status]);
 }

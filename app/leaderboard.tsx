@@ -9,6 +9,7 @@ import {
 } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import { useLeaderboard } from '@/features/leaderboard/useLeaderboard';
 import type {
   LeaderboardScope,
@@ -77,7 +78,8 @@ function SelfCard({ self }: { self: LeaderSelf }) {
 
 export default function LeaderboardScreen() {
   const [scope, setScope] = useState<LeaderboardScope>('group');
-  const { data, isLoading, isError, refetch } = useLeaderboard(scope);
+  const { data, isLoading, isError, isRefetching, refetch } =
+    useLeaderboard(scope);
   const myId = useAuthStore((s) => (s.user?.id ? Number(s.user.id) : null));
 
   return (
@@ -123,6 +125,12 @@ export default function LeaderboardScreen() {
       ) : (
         <FlatList
           data={data.entries}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => void refetch()}
+            />
+          }
           keyExtractor={(e) => String(e.id)}
           renderItem={({ item }) => (
             <LeaderRow item={item} isMe={myId != null && item.id === myId} />

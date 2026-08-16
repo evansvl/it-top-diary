@@ -12,6 +12,7 @@ import {
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { Ionicons } from '@expo/vector-icons';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import { useLatestNews, useNewsDetail } from '@/features/news/useNews';
 import type { NewsItem } from '@/features/news/types';
 import { htmlToBlocks } from '@/lib/html';
@@ -47,7 +48,7 @@ function NewsDetailModal({
   id: number | null;
   onClose: () => void;
 }) {
-  const { data, isLoading, isError } = useNewsDetail(id);
+  const { data, isLoading, isError, isRefetching, refetch } = useNewsDetail(id);
   const blocks = data ? htmlToBlocks(data.html) : [];
 
   return (
@@ -73,11 +74,27 @@ function NewsDetailModal({
           {isLoading ? (
             <ActivityIndicator className="my-8" color="#1E6FD9" />
           ) : isError || !data ? (
-            <Text className="my-8 text-center text-sm text-danger">
-              Не удалось загрузить новость
-            </Text>
+            <View className="my-8 items-center">
+              <Text className="text-center text-sm text-danger">
+                Не удалось загрузить новость
+              </Text>
+              <Pressable
+                onPress={() => void refetch()}
+                className="mt-3 rounded-full bg-elevated px-4 py-2 active:opacity-70"
+              >
+                <Text className="text-sm text-body">Повторить</Text>
+              </Pressable>
+            </View>
           ) : (
-            <ScrollView showsVerticalScrollIndicator={false}>
+            <ScrollView
+              refreshControl={
+                <ThemedRefreshControl
+                  refreshing={isRefetching}
+                  onRefresh={() => void refetch()}
+                />
+              }
+              showsVerticalScrollIndicator={false}
+            >
               <Text className="text-xs text-faint">
                 {formatDate(data.time.slice(0, 10))}
               </Text>
@@ -106,7 +123,7 @@ function NewsDetailModal({
 }
 
 export default function NewsScreen() {
-  const { data, isLoading, isError, refetch } = useLatestNews();
+  const { data, isLoading, isError, isRefetching, refetch } = useLatestNews();
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
@@ -128,6 +145,12 @@ export default function NewsScreen() {
       ) : (
         <FlatList
           data={data}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => void refetch()}
+            />
+          }
           keyExtractor={(n) => String(n.id)}
           renderItem={({ item }) => (
             <NewsRow item={item} onPress={() => setSelectedId(item.id)} />

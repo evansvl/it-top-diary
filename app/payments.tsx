@@ -1,6 +1,7 @@
 import { ActivityIndicator, Pressable, ScrollView, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import { usePayments } from '@/features/payments/usePayments';
 import { formatRub, type PaymentsData } from '@/features/payments/types';
 import { formatDate } from '@/lib/date';
@@ -13,9 +14,20 @@ function SectionTitle({ title }: { title: string }) {
   );
 }
 
-function PaymentsContent({ data }: { data: PaymentsData }) {
+function PaymentsContent({
+  data,
+  refreshing,
+  onRefresh,
+}: {
+  data: PaymentsData;
+  refreshing: boolean;
+  onRefresh: () => void;
+}) {
   return (
     <ScrollView
+      refreshControl={
+        <ThemedRefreshControl refreshing={refreshing} onRefresh={onRefresh} />
+      }
       contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 32 }}
       showsVerticalScrollIndicator={false}
     >
@@ -110,7 +122,7 @@ function PaymentsContent({ data }: { data: PaymentsData }) {
 }
 
 export default function PaymentsScreen() {
-  const { data, isLoading, isError, refetch } = usePayments();
+  const { data, isLoading, isError, isRefetching, refetch } = usePayments();
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
@@ -129,7 +141,11 @@ export default function PaymentsScreen() {
           </Pressable>
         </View>
       ) : (
-        <PaymentsContent data={data} />
+        <PaymentsContent
+          data={data}
+          refreshing={isRefetching}
+          onRefresh={() => void refetch()}
+        />
       )}
     </SafeAreaView>
   );
