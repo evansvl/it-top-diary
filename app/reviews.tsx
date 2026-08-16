@@ -1,6 +1,7 @@
 import { ActivityIndicator, FlatList, Pressable, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import { ScreenHeader } from '@/components/ui/ScreenHeader';
+import { ThemedRefreshControl } from '@/components/ui/ThemedRefreshControl';
 import { useReviews } from '@/features/reviews/useReviews';
 import type { TeacherReview } from '@/features/reviews/types';
 import { formatDate } from '@/lib/date';
@@ -25,7 +26,7 @@ function ReviewRow({ item }: { item: TeacherReview }) {
 }
 
 export default function ReviewsScreen() {
-  const { data, isLoading, isError, refetch } = useReviews();
+  const { data, isLoading, isError, isRefetching, refetch } = useReviews();
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
@@ -46,6 +47,12 @@ export default function ReviewsScreen() {
       ) : (
         <FlatList
           data={data}
+          refreshControl={
+            <ThemedRefreshControl
+              refreshing={isRefetching}
+              onRefresh={() => void refetch()}
+            />
+          }
           keyExtractor={(r, i) => `${r.date}-${i}`}
           renderItem={({ item }) => <ReviewRow item={item} />}
           contentContainerStyle={{ paddingHorizontal: 16, paddingBottom: 24 }}

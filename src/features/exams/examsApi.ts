@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type { ExamRecord } from './types';
 
 type RawExam = {
@@ -13,15 +14,19 @@ type RawExam = {
 
 // Все экзамены, новые сверху.
 export async function fetchExams(): Promise<ExamRecord[]> {
-  const raw = await apiRequest<RawExam[]>(endpoints.progress.studentExams);
-  return raw
+  const payload = await apiRequest<unknown>(endpoints.progress.studentExams);
+  return listOrEmpty<RawExam>(payload)
     .map((r) => ({
       id: r.exam_id,
-      date: r.date,
-      subject: r.spec,
-      teacher: r.teacher,
-      mark: r.mark,
-      markType: r.mark_type,
+      date: typeof r.date === 'string' ? r.date.slice(0, 10) : '',
+      subject:
+        typeof r.spec === 'string' && r.spec.trim() ? r.spec.trim() : 'Экзамен',
+      teacher: typeof r.teacher === 'string' ? r.teacher.trim() : '',
+      mark: typeof r.mark === 'number' && Number.isFinite(r.mark) ? r.mark : null,
+      markType:
+        typeof r.mark_type === 'number' && Number.isFinite(r.mark_type)
+          ? r.mark_type
+          : null,
     }))
     .sort((a, b) => (a.date < b.date ? 1 : a.date > b.date ? -1 : 0));
 }

@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type {
   DaySubjectMarks,
   GradesData,
@@ -46,7 +47,8 @@ function average(values: number[]): number | null {
 
 // Тянем весь журнал и сворачиваем в оценки по предметам + сводку.
 export async function fetchGrades(): Promise<GradesData> {
-  const raw = await apiRequest<RawVisit[]>(endpoints.progress.studentVisits);
+  const payload = await apiRequest<unknown>(endpoints.progress.studentVisits);
+  const raw = listOrEmpty<RawVisit>(payload);
 
   const subjects = new Map<number, SubjectGrades>();
   const visits: LessonVisit[] = [];

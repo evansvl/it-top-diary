@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type { HomeworkCounts, HomeworkItem, HomeworkSubmission } from './types';
 
 // Сырой ответ: массив { counter_type, counter }.
@@ -9,7 +10,8 @@ type RawCount = { counter_type: number; counter: number };
 // 0 — просрочено, 1 — проверено, 2 — на проверке,
 // 3 — надо сделать, 4 — всего, 5 — удалено.
 export async function fetchHomeworkCounts(): Promise<HomeworkCounts> {
-  const raw = await apiRequest<RawCount[]>(endpoints.count.homework);
+  const payload = await apiRequest<unknown>(endpoints.count.homework);
+  const raw = listOrEmpty<RawCount>(payload);
   const byType = new Map(raw.map((r) => [r.counter_type, r.counter]));
   const at = (type: number): number => byType.get(type) ?? 0;
   return {
@@ -74,10 +76,10 @@ export async function fetchHomeworkList({
   type = 0,
 }: HomeworkListParams): Promise<HomeworkItem[]> {
   const query = `?page=${page}&status=${status}&type=${type}&group_id=${groupId}`;
-  const raw = await apiRequest<RawHomework[]>(
+  const payload = await apiRequest<unknown>(
     `${endpoints.homework.list}${query}`,
   );
-  return raw.map((r) => ({
+  return listOrEmpty<RawHomework>(payload).map((r) => ({
     id: r.id,
     theme: r.theme,
     subject: r.name_spec,

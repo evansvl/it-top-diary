@@ -10,7 +10,7 @@ on:
 
 jobs:
   build:
-    # macos-15 несёт Xcode 16.x (RN 0.85 требует >= 16.1).
+    # macos-15 несёт Xcode 16.x (RN 0.86 требует >= 16.1).
     runs-on: macos-15
     steps:
       - name: Checkout

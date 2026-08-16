@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type {
   LeaderboardData,
   LeaderboardScope,
@@ -36,11 +37,11 @@ export async function fetchLeaderboard(
       : endpoints.dashboard.leaderStreamPoints;
 
   const [rawList, rawSelf] = await Promise.all([
-    apiRequest<RawLeader[]>(listPath),
+    apiRequest<unknown>(listPath),
     apiRequest<RawSelf | null>(selfPath),
   ]);
 
-  const entries: LeaderEntry[] = rawList
+  const entries: LeaderEntry[] = listOrEmpty<RawLeader>(rawList)
     .map((r) => ({
       id: r.id,
       fullName: r.full_name.trim(),

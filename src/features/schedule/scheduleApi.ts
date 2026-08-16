@@ -1,5 +1,6 @@
 import { apiRequest } from '@/api/client';
 import { endpoints } from '@/api/endpoints';
+import { listOrEmpty } from '@/api/response';
 import type { ScheduleDay, ScheduleLesson } from './types';
 
 type RawLesson = {
@@ -16,9 +17,10 @@ type RawLesson = {
 export async function fetchScheduleMonth(
   dateFilter: string,
 ): Promise<ScheduleDay[]> {
-  const raw = await apiRequest<RawLesson[]>(
+  const payload = await apiRequest<unknown>(
     `${endpoints.schedule.getMonth}?date_filter=${dateFilter}`,
   );
+  const raw = listOrEmpty<RawLesson>(payload);
 
   const byDay = new Map<string, ScheduleLesson[]>();
   for (const r of raw) {
