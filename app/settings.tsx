@@ -14,7 +14,7 @@ import { SettingsRow } from '@/components/settings/SettingsRow';
 import { UpdateCard } from '@/components/settings/UpdateCard';
 import { useSettingsStore } from '@/features/settings/settingsStore';
 import { CURRENT_VERSION, useUpdatesStore } from '@/features/updates/updatesStore';
-import { queryClient } from '@/lib/queryClient';
+import { clearOfflineCache } from '@/lib/queryClient';
 import {
   clearCredentials,
   loadCredentials,
@@ -83,8 +83,9 @@ export default function SettingsScreen() {
   };
 
   const onClearCache = () => {
-    queryClient.clear();
-    Alert.alert('Готово', 'Кэш очищен — данные будут загружены заново.');
+    void clearOfflineCache().then(() => {
+      Alert.alert('Готово', 'Офлайн-кэш очищен — данные будут загружены заново.');
+    });
   };
 
   return (
@@ -165,7 +166,7 @@ export default function SettingsScreen() {
           />
           <SettingsRow
             label="Очистить кэш данных"
-            hint="Оценки, расписание и ДЗ загрузятся заново"
+            hint="Удалить сохранённые оценки, расписание и ДЗ"
             onPress={onClearCache}
           />
         </View>

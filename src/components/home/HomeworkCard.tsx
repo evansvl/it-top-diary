@@ -21,7 +21,7 @@ function Cell({
 
 // Карточка-сводка по домашним заданиям (счётчики из /count/homework).
 export function HomeworkCard() {
-  const { data, isLoading, isError } = useHomeworkCounts();
+  const { data, isLoading } = useHomeworkCounts();
 
   return (
     <View className="mt-4 rounded-card bg-surface p-5">
@@ -39,7 +39,7 @@ export function HomeworkCard() {
 
       {isLoading ? (
         <ActivityIndicator className="my-5" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <Text className="mt-3 text-sm text-danger">Не удалось загрузить</Text>
       ) : (
         <View className="mt-4 flex-row">

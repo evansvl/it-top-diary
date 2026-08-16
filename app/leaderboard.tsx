@@ -78,7 +78,7 @@ function SelfCard({ self }: { self: LeaderSelf }) {
 
 export default function LeaderboardScreen() {
   const [scope, setScope] = useState<LeaderboardScope>('group');
-  const { data, isLoading, isError, isRefetching, refetch } =
+  const { data, isLoading, isRefetching, refetch } =
     useLeaderboard(scope);
   const myId = useAuthStore((s) => (s.user?.id ? Number(s.user.id) : null));
 
@@ -112,7 +112,7 @@ export default function LeaderboardScreen() {
 
       {isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable

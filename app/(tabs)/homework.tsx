@@ -133,7 +133,6 @@ export default function HomeworkTab() {
   const {
     data,
     isLoading,
-    isError,
     isFetching,
     refetch,
     fetchNextPage,
@@ -187,7 +186,7 @@ export default function HomeworkTab() {
         </Text>
       ) : isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable

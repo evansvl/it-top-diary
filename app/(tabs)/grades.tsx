@@ -136,7 +136,7 @@ function AttendanceCard({
 }
 
 export default function GradesTab() {
-  const { data, isLoading, isError, isRefetching, refetch } = useGrades();
+  const { data, isLoading, isRefetching, refetch } = useGrades();
   const [selectedMark, setSelectedMark] = useState<MarkDetail | null>(null);
   const [selectedHomework, setSelectedHomework] =
     useState<HomeworkItem | null>(null);
@@ -149,7 +149,7 @@ export default function GradesTab() {
 
       {isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable

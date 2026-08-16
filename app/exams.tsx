@@ -42,7 +42,7 @@ function ExamRow({ item }: { item: ExamRecord }) {
 }
 
 export default function ExamsScreen() {
-  const { data, isLoading, isError, isRefetching, refetch } = useExams();
+  const { data, isLoading, isRefetching, refetch } = useExams();
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
@@ -50,7 +50,7 @@ export default function ExamsScreen() {
 
       {isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable

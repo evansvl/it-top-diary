@@ -4,7 +4,7 @@ import { monthAnchorIso, todayIso } from '@/lib/date';
 
 // Сводка расписания: пары на сегодня. Открывает экран /schedule.
 export function ScheduleCard() {
-  const { data, isLoading, isError } = useSchedule(monthAnchorIso());
+  const { data, isLoading } = useSchedule(monthAnchorIso());
   const today = data?.find((d) => d.date === todayIso());
   const lessons = today?.lessons ?? [];
 
@@ -17,7 +17,7 @@ export function ScheduleCard() {
 
       {isLoading ? (
         <ActivityIndicator className="my-5" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <Text className="mt-3 text-sm text-danger">Не удалось загрузить</Text>
       ) : (
         <View className="mt-3">

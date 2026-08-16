@@ -122,7 +122,7 @@ function PaymentsContent({
 }
 
 export default function PaymentsScreen() {
-  const { data, isLoading, isError, isRefetching, refetch } = usePayments();
+  const { data, isLoading, isRefetching, refetch } = usePayments();
 
   return (
     <SafeAreaView className="flex-1 bg-canvas" edges={['top']}>
@@ -130,7 +130,7 @@ export default function PaymentsScreen() {
 
       {isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable

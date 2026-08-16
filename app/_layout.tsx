@@ -5,12 +5,18 @@ import '@/features/notifications/background';
 import { useEffect } from 'react';
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
-import { QueryClientProvider } from '@tanstack/react-query';
+import { useIsRestoring } from '@tanstack/react-query';
+import { PersistQueryClientProvider } from '@tanstack/react-query-persist-client';
 import { StatusBar } from 'expo-status-bar';
 import { Stack } from 'expo-router';
 import * as SplashScreen from 'expo-splash-screen';
 import { useColorScheme } from 'nativewind';
-import { queryClient } from '@/lib/queryClient';
+import {
+  queryClient,
+  queryPersistOptions,
+} from '@/lib/queryClient';
+import { useQueryLifecycle } from '@/lib/useQueryLifecycle';
+import { OfflineBanner } from '@/components/ui/OfflineBanner';
 import { useAuthStore } from '@/features/auth/authStore';
 import { useSettingsStore } from '@/features/settings/settingsStore';
 import { useTheme } from '@/theme/useColorScheme';
@@ -27,13 +33,14 @@ function ThemedNavigator() {
   const { setColorScheme } = useColorScheme();
   const theme = useSettingsStore((s) => s.theme);
   const settingsHydrated = useSettingsStore((s) => s.hydrated);
+  const isRestoringCache = useIsRestoring();
   const { palette, isDark } = useTheme();
 
   useEffect(() => {
-    if (!settingsHydrated) return;
+    if (!settingsHydrated || isRestoringCache) return;
     setColorScheme(theme);
     void SplashScreen.hideAsync();
-  }, [settingsHydrated, theme, setColorScheme]);
+  }, [isRestoringCache, settingsHydrated, theme, setColorScheme]);
 
   return (
     <>
@@ -45,6 +52,7 @@ function ThemedNavigator() {
           animation: 'slide_from_right',
         }}
       />
+      <OfflineBanner />
     </>
   );
 }
@@ -53,6 +61,7 @@ function ThemedNavigator() {
 export default function RootLayout() {
   const hydrate = useAuthStore((s) => s.hydrate);
   const hydrateSettings = useSettingsStore((s) => s.hydrate);
+  useQueryLifecycle();
 
   useEffect(() => {
     hydrate();
@@ -61,11 +70,14 @@ export default function RootLayout() {
 
   return (
     <GestureHandlerRootView style={{ flex: 1 }}>
-      <QueryClientProvider client={queryClient}>
+      <PersistQueryClientProvider
+        client={queryClient}
+        persistOptions={queryPersistOptions}
+      >
         <SafeAreaProvider>
           <ThemedNavigator />
         </SafeAreaProvider>
-      </QueryClientProvider>
+      </PersistQueryClientProvider>
     </GestureHandlerRootView>
   );
 }

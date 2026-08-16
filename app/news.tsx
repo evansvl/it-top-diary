@@ -48,7 +48,7 @@ function NewsDetailModal({
   id: number | null;
   onClose: () => void;
 }) {
-  const { data, isLoading, isError, isRefetching, refetch } = useNewsDetail(id);
+  const { data, isLoading, isRefetching, refetch } = useNewsDetail(id);
   const blocks = data ? htmlToBlocks(data.html) : [];
 
   return (
@@ -73,7 +73,7 @@ function NewsDetailModal({
 
           {isLoading ? (
             <ActivityIndicator className="my-8" color="#1E6FD9" />
-          ) : isError || !data ? (
+          ) : !data ? (
             <View className="my-8 items-center">
               <Text className="text-center text-sm text-danger">
                 Не удалось загрузить новость
@@ -123,7 +123,7 @@ function NewsDetailModal({
 }
 
 export default function NewsScreen() {
-  const { data, isLoading, isError, isRefetching, refetch } = useLatestNews();
+  const { data, isLoading, isRefetching, refetch } = useLatestNews();
   const [selectedId, setSelectedId] = useState<number | null>(null);
 
   return (
@@ -132,7 +132,7 @@ export default function NewsScreen() {
 
       {isLoading ? (
         <ActivityIndicator className="mt-8" color="#1E6FD9" />
-      ) : isError || !data ? (
+      ) : !data ? (
         <View className="mt-8 items-center px-4">
           <Text className="text-sm text-danger">Не удалось загрузить</Text>
           <Pressable
