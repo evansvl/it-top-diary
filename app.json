@@ -2,13 +2,14 @@
   "expo": {
     "name": "IT Top",
     "slug": "college-diary",
-    "version": "1.3.2",
+    "version": "1.3.3",
     "scheme": "diary",
     "orientation": "portrait",
     "userInterfaceStyle": "automatic",
     "icon": "./assets/icon.png",
     "android": {
       "package": "com.diary.app",
+      "versionCode": 10303,
       "softwareKeyboardLayoutMode": "pan",
       "permissions": [
         "android.permission.REQUEST_INSTALL_PACKAGES",
@@ -22,7 +23,8 @@
     },
     "ios": {
       "supportsTablet": true,
-      "bundleIdentifier": "com.diary.app"
+      "bundleIdentifier": "com.diary.app",
+      "buildNumber": "1.3.3"
     },
     "plugins": [
       "expo-router",
